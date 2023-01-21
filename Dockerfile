@@ -30,6 +30,6 @@ USER omada
 
 ENTRYPOINT ["/omada/entrypoint.sh"]
 
-HEALTHCHECK --interval=5m --timeout=30s --start-period=1m --retries=2 \
+HEALTHCHECK --interval=5m --timeout=30s --start-period=3m --retries=2 \
  CMD sudo /usr/bin/tpeap status | cut -c -28 | xargs -I % test "Omada Controller is running." = % && exit 0 || exit 1
  
