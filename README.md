@@ -1,6 +1,6 @@
 # Omada Software Controller
 
-Container image for TP-Link's [Omada Software Controller](https://www.tp-link.com/us/business-networking/omada-sdn-controller) for managing [Omada SDN networking devices](https://www.tp-link.com/us/business-networking/all-omada).
+Container image for TP-Link's [Omada Software Controller](https://www.tp-link.com/us/business-networking/omada-sdn-controller) for managing [Omada SDN networking devices](https://www.tp-link.com/us/business-networking/all-omada/).
 
 ## About omada-controller image
 Image is for running the Omada Controller inside a rootless Podman container. However, as the omada control script `tpeap` can only be run as user root, sudo is used for invoking the script. In addition some extra linux capabilities are given for the container (--cap-add).
