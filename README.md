@@ -33,6 +33,9 @@ Run arguments:<br>
 `--e TZ=ETC/UTC` This is the default timezone of the image. To change the timezone see [TZ database](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) and pick a new value from column \"TZ database name\".
 `--stop-timeout=300` This timer value allows 5 minutes for the container and it's applications to gracefully stop. Required time may depend on the MongoDB size and type of hardware. By default podman/docker only allows 10s for a container to stop after which it is forcefully stopped. Adjust the value as needed. `-p ...` These are the default ports needed by the Omada Controller to communicate.
 
+Omada controller web interface:
+http://localhost:8088
+
 ### Checking status and logs
 
 Here is some examples how to check the status of the container and how to find the logs.
