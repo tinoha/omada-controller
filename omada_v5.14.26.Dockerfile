@@ -3,7 +3,7 @@ FROM ubuntu:22.04
 LABEL org.opencontainers.image.title="omada-controller"\
  org.opencontainers.image.description="TP-Link Omada Software Controller"\
  org.opencontainers.image.base.name="docker.io/library/ubuntu:22.04"\
- org.opencontainers.image.version="v5.14.26"
+ org.opencontainers.image.version="5.14.26"
 
 ENV TZ="Etc/UTC"
 
