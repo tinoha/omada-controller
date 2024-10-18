@@ -1,1 +1,1 @@
-omada ALL=(ALL) NOPASSWD:/opt/tplink/EAPController/bin/control.sh,/usr/bin/tpeap
+ALL  ALL=(ALL) NOPASSWD:/opt/tplink/EAPController/bin/control.sh,/usr/bin/tpeap
