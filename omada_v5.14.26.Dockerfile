@@ -7,25 +7,22 @@ LABEL org.opencontainers.image.title="omada-controller"\
 
 ENV TZ="Etc/UTC"
 
-RUN apt-get -y update && apt-get -y upgrade && apt-get -y clean && apt-get -y autoremove
-
 WORKDIR /omada
-
-
-# Install Omada contoller prerequisites
-RUN apt-get -y install curl gnupg sudo && \
- curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
- gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor && \
- echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list && \
- apt-get update && \
- apt-get install -y mongodb-org=7.0.7 mongodb-org-database=7.0.7 mongodb-org-server=7.0.7 mongodb-mongosh mongodb-org-mongos=7.0.7 mongodb-org-tools=7.0.7 \
-  openjdk-8-jre-headless jsvc && \
- apt-get -y clean && apt-get -y autoremove
-
 COPY entrypoint.sh omada_sudoers $WORKDIR
 
+# Add repositories, update system and install prerequisites
+RUN apt-get -y update && apt-get -y upgrade && \
+  apt-get -y install apt-utils curl gnupg sudo && \
+  curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor && \
+  echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list && \
+  apt-get update && \
+  apt-get install -y mongodb-org=7.0.7 mongodb-org-database=7.0.7 mongodb-org-server=7.0.7 mongodb-mongosh mongodb-org-mongos=7.0.7 mongodb-org-tools=7.0.7 \
+  openjdk-8-jre-headless jsvc && \
+  apt-get -y clean && apt-get -y autoremove
+
 # Install and configure Omada-Controller software 
-RUN curl -L0O https://static.tp-link.com/upload/software/2024/202407/20240710/Omada_SDN_Controller_v5.14.26.1_linux_x64.deb &&\
+RUN  groupadd -g 550 omada && useradd -u 550 -g omada -d /opt/tplink/EAPController/data -s /usr/sbin/nologin -M omada && \
+ curl -LO https://static.tp-link.com/upload/software/2024/202407/20240710/Omada_SDN_Controller_v5.14.26.1_linux_x64.deb && \
  apt-get install -y ./Omada_SDN_Controller_v* && \
  tpeap stop && rm -f ./Omada_SDN_Controller_v* && \
  chmod 0440 omada_sudoers && mv omada_sudoers /etc/sudoers.d
@@ -38,6 +35,5 @@ USER omada
 
 ENTRYPOINT ["/omada/entrypoint.sh"]
 
-HEALTHCHECK --interval=5m --timeout=30s --start-period=3m --retries=2 \
+HEALTHCHECK --interval=5m --timeout=30s --start-period=2m --retries=2 \
  CMD sudo /usr/bin/tpeap status | cut -c -28 | xargs -I % test "Omada Controller is running." = % && exit 0 || exit 1
- 
