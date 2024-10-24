@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: omada-controller
+  namespace: omada
+  labels:
+    app: omada-controller
+spec:
+  type: LoadBalancer
+  ports:
+    - name: port-8088
+      port: 8088
+      targetPort: 8088
+    - name: port-8043
+      port: 8043
+      targetPort: 8043
+    - name: port-8843
+      port: 8843
+      targetPort: 8843
+    - name: port-29810
+      port: 29810
+      targetPort: 29810
+      protocol: UDP
+    - name: port-29811
+      port: 29811
+      targetPort: 29811
+    - name: port-29812
+      port: 29812
+      targetPort: 29812
+    - name: port-29813
+      port: 29813
+      targetPort: 29813
+    - name: port-29814
+      port: 29814
+      targetPort: 29814
+  selector:
+    app: omada-controller

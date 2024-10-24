@@ -1,0 +1,77 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: omada-controller
+  namespace: omada
+  labels:
+    app: omada-controller
+spec:
+  serviceName: omada-controller
+  replicas: 1
+  selector:
+    matchLabels:
+      app: omada-controller
+  template:
+    metadata:
+      labels:
+        app: omada-controller
+    spec:
+      initContainers:
+        - name: init-data
+          image: docker.io/tihal/omada-controller:5.14.26
+          command: # Initialize omada-data volume only if it's empty and no init-data.lock exists.
+            - "sh"
+            - "-exc"
+            - |
+              if [ ! -f /data/init-data.lock -a -z "$(find /data -mindepth 1 -print -quit)" ]; then
+                echo "Initializing omada data directory..." &&
+                chown -c omada:omada /data /logs &&
+                cp -rp /opt/tplink/EAPController/data/. /data &&
+                touch /data/init-data.lock
+              fi
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: omada-logs
+              mountPath: /logs
+            - name: omada-data
+              mountPath: /data
+      containers:
+        - name: omada-controller
+          image: docker.io/tihal/omada-controller:5.14.26
+          env:
+            - name: TZ
+              value: Etc/UTC
+          volumeMounts:
+            - name: omada-logs
+              mountPath: /opt/tplink/EAPController/logs
+            - name: omada-data
+              mountPath: /opt/tplink/EAPController/data
+          ports:
+            - containerPort: 8088
+            - containerPort: 8043
+            - containerPort: 8843
+            - containerPort: 29810
+              protocol: UDP
+            - containerPort: 29811
+            - containerPort: 29812
+            - containerPort: 29813
+            - containerPort: 29814
+          securityContext:
+            runAsUser: 550
+            runAsGroup: 550
+            capabilities:
+              add:
+                - DAC_READ_SEARCH
+                - SETGID
+                - SETUID
+                - NET_BIND_SERVICE
+      terminationGracePeriodSeconds: 300
+      volumes:
+        - name: omada-logs
+          persistentVolumeClaim:
+            claimName: omada-logs
+        - name: omada-data
+          persistentVolumeClaim:
+            claimName: omada-data

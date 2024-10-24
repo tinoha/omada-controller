@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: omada-logs
+  namespace: omada
+  labels:
+    app: omada-controller
+spec:
+  # storageClassName: <Define the storage class use, otherwise cluster default applies
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 4Gi # Check official Omada docs and adjust acordingly
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: omada-data
+  namespace: omada
+  labels:
+    app: omada-controller
+spec:
+  # storageClassName: <Define the storage class use, otherwise cluster default applies
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 12Gi # Check official Omada docs and adjust acordingly
