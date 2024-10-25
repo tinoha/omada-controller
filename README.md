@@ -53,13 +53,13 @@ podman exec -it omada-controller bash
 
 Persistent container data in `/opt/tplink/EAPController/logs` and `/opt/tplink/EAPController/data` is by default stored in unnamed volumes. The example Podman start command is using named volumes for data persistence.
 
-## Backups
-
-It's strongly recommended to create backups and store them in a safe location. For instructions on performing manual and automatic backups, refer to the TP-Link Omada Controller documentation.
-
 ## Kubernetes Deployment
 
 For Kubernetes environments, example manifests are provided in the `kubernetes` directory. These manifests offer a starting point to deploy the Omada Controller container image on Kubernetes. Adjustments may be needed to match your specific environment.
+
+## Backups
+
+It's strongly recommended to create backups and store them in a safe location. For instructions on performing manual and automatic backups, refer to the TP-Link Omada Controller documentation.
 
 ## Build
 
