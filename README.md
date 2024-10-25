@@ -74,7 +74,7 @@ For more information, visit the image source repository at [source](https://gith
 
 ## License
 
-My personal work, including the scripts, Dockerfile, and configuration files in this repository, are licensed under the MIT License. See the [LICENSE](LICENSE.txt) file for details.
+My personal work, including the scripts, Dockerfile, and configuration files in this repository, are licensed under the MIT License. See the [LICENSE](https://github.com/tinoha/omada-controller/blob/main/LICENSE.txt) file for details.
 
 ### Third-Party Software
 
