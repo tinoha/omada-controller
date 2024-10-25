@@ -2,17 +2,17 @@
 
 Container image for running TP-Link's [Omada Software Controller](https://www.tp-link.com/us/business-networking/omada-sdn-controller) to manage [Omada SDN network devices](https://www.tp-link.com/us/business-networking/all-omada/).
 
-## About omada-controller image
+## About the Omada-Controller Image
 
-Image is built by installing standard TP-Link provided Omada Controller [software package](https://www.tp-link.com/us/support/download/omada-software-controller/) `*.deb` and its dependencies on a supported Ubuntu OS version (base image). No modifications were done to the original TP-Link provided software or files. Control (start/stop/status) of the Omada controller is implemented by utilizing the original `tpeap` script.
+The image is built by installing TP-Link's standard Omada Controller [software package](https://www.tp-link.com/us/support/download/omada-software-controller/) `*.deb` and its dependencies on a supported Ubuntu OS base image. No modifications were done to the original TP-Link provided software or files. Control (start/stop/status) of the Omada controller is implemented by utilizing the original `tpeap` script.
 
 Image is built and tested with rootless Podman containers. However, as the omada control script `tpeap` can only be run as user root, `sudo` is used for invoking the script. Otherwise the container runs as non-root user (omada). Some extra linux capabilities are given to the container (`--cap-add`).
 
-## Usage
+## Usage on Docker/Podman
 
 ### Start & Stop
 
-Here is an example how to start and stop the controller. If you are using docker just replace the word podman with docker.
+Here is an example of how to start and stop the controller. If you are using Docker, replace the word podman with docker.
 
 ```bash
 podman run -d \
@@ -31,7 +31,7 @@ podman stop omada-controller
 
 Run arguments:
 
-- `--e TZ=Etc/UTC` This is the default timezone of the image. To change the timezone see [TZ database](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) and pick a new value from column \"TZ database name\".
+- `--e TZ=Etc/UTC` This is the default timezone of the image. To change the timezone see [TZ database](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) and pick a new value from the \"TZ database name\" column.
 - `--stop-timeout=300` This timer value allows 5 minutes for the container and it's applications to gracefully stop. Required time may depend on the MongoDB size and type of hardware. By default podman/docker only allows 10s for a container to stop after which it is forcefully stopped. Adjust the value based on your needs.
 - `-p ...` These are the default ports needed by the Omada Controller to communicate.
 
@@ -49,13 +49,17 @@ podman exec -it omada-controller ls -l /opt/tplink/EAPController/logs
 podman exec -it omada-controller bash
 ```
 
-### Backups
+### Persistent storage
+
+Persistent container data in `/opt/tplink/EAPController/logs` and `/opt/tplink/EAPController/data` is by default stored in unnamed volumes. The example Podman start command is using named volumes for data persistence.
+
+## Backups
 
 It's strongly recommended to create backups and store them in a safe location. For instructions on performing manual and automatic backups, refer to the TP-Link Omada Controller documentation.
 
-### Persistent storage
+## Kubernetes Deployment
 
-Persistent container data in `/opt/tplink/EAPController/logs` and `/opt/tplink/EAPController/data` are by default stored in unnamed volumes. The example Podman start command is using named volumes for data persistence.
+For Kubernetes environments, example manifests are provided in the `kubernetes` directory. These manifests offer a starting point to deploy the Omada Controller container image on Kubernetes. Adjustments may be needed to match your specific environment.
 
 ## Build
 
@@ -67,3 +71,11 @@ podman build --cap-add=DAC_READ_SEARCH,SETGID,SETUID,NET_BIND_SERVICE \
 ```
 
 For more information, visit the image source repository at [source](https://github.com/tinoha/omada-controller/) on GitHub.
+
+## License
+
+My personal work, including the scripts, Dockerfile, and configuration files in this repository, are licensed under the MIT License. See the [LICENSE](LICENSE.txt) file for details.
+
+### Third-Party Software
+
+This project uses TP-Link Omada Controller, MongoDB, Java, and the Ubuntu base image, which are each licensed separately. Please consult each respective software’s documentation for detailed licensing information. This statement also applies to any other third-party software included in this project, whether specifically listed or not.
