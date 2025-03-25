@@ -1,0 +1,65 @@
+name: Container Image CI
+
+on:
+  push:
+    branches:
+      - main
+      - v* # Triggers for feature branches prefixed with 'v'
+      - workflow-test
+    tags:
+      - v* # Triggers for tags prefixed with 'v'
+      # pull_request:
+  #   branches:
+  #     - main
+
+env:
+  IMAGE_NAME: omada-controller
+  TEST_IMAGE_TAG: "5.15.20" # Set static value only when pushing branch workflow-test
+  GITHUB_REGISTRY: ghcr.io/tinoha
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      packages: write # Grants permission to push Docker images to GHCR
+      contents: read # Allows reading repository content (needed for actions/checkout)
+
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout repository
+
+      # Extract version based on trigger source (branch, tag or static)
+      - name: Set IMAGE_TAG (remove 'v' prefix)
+        run: |
+          if [[ -n "${{env.TEST_IMAGE_TAG}}" && "${GITHUB_REF_NAME}" == "workflow-test" ]]; then
+            echo "IMAGE_TAG=${{ env.TEST_IMAGE_TAG }}" >> $GITHUB_ENV
+            echo "IMAGE_TAG set to static value ${{ env.IMAGE_TAG }}"
+          elif [[ "${GITHUB_REF_NAME}" == "main" && "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            # Handle tag push, extract version from the tag
+            echo "IMAGE_TAG=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+            echo "IMAGE_TAG set to ${{ env.IMAGE_TAG }}"
+          elif [[ "${GITHUB_REF_NAME}" =~ "^v.*" && "${GITHUB_REF_TYPE}" == "branch" ]]; then
+            # Handle feature branch (v*) push, extract version from the branch name
+            echo "IMAGE_TAG=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+            echo "IMAGE_TAG set to ${{ env.IMAGE_TAG }}" 
+          else 
+            echo "Could not set IMAGE_TAG variable. Exit workflow."
+            exit 1
+          fi
+
+      - name: Log in to GitHub container registry
+        if: github.ref != 'refs/heads/main'
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build the container image (with podman)
+        run: ./build.sh --set-ver ${{ env.IMAGE_TAG }}
+
+      - name: List built images
+        run: podman image ls
+
+      - name: Push to GitHub container registry (GHCR)
+        if: github.ref != 'refs/heads/main'
+        run: |
+          podman tag localhost/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} && \
+          podman push ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}

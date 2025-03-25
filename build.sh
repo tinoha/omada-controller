@@ -61,7 +61,7 @@ echo ""
 podman build --cap-add=DAC_READ_SEARCH,SETGID,SETUID,NET_BIND_SERVICE \
   --no-cache \
   --format docker \
-  -t docker.io/tihal/omada-controller:"${VER}" \
+  -t omada-controller:"${VER}" \
   -f "omada_v${VER}.Dockerfile" \
   --label org.opencontainers.image.authors="Tino <tinoha10@outlook.com>" \
   --label org.opencontainers.image.url="https://github.com/tinoha/omada-controller" \
