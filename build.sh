@@ -58,6 +58,14 @@ echo "Used Omada version: ${VER}"
 echo "Building image omada-controller for ${VER} version..."
 echo ""
 
+# Check if GITHUB_SHA is set (indicating that the script is running in GitHub Actions)
+if [[ -n "${GITHUB_SHA}" ]]; then
+  COMMIT_HASH="${GITHUB_SHA}"
+else
+  # For local runs get the hash from git.
+  COMMIT_HASH="$(git log main -1 --format=%h)"
+fi
+
 podman build --cap-add=DAC_READ_SEARCH,SETGID,SETUID,NET_BIND_SERVICE \
   --no-cache \
   --format docker \
@@ -68,5 +76,5 @@ podman build --cap-add=DAC_READ_SEARCH,SETGID,SETUID,NET_BIND_SERVICE \
   --label org.opencontainers.image.documentation="https://github.com/tinoha/omada-controller/blob/main/README.md" \
   --label org.opencontainers.image.version="${VER}" \
   --label org.opencontainers.image.created="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
-  --label org.opencontainers.image.revision="$(git log main -1 --format=%h)" \
+  --label org.opencontainers.image.revision="${COMMIT_HASH}" \
   .
