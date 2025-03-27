@@ -3,14 +3,10 @@ name: Container Image CI
 on:
   push:
     branches:
-      - main
       - v* # Triggers for feature branches prefixed with 'v'
       - workflow-test
     tags:
       - v* # Triggers for tags prefixed with 'v'
-      # pull_request:
-  #   branches:
-  #     - main
 
 env:
   IMAGE_NAME: omada-controller
@@ -29,9 +25,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        name: Checkout full repository history
-        with:
-          fetch-depth: 0 # Fetch full commit history
+        name: Checkout repository
 
       # Extract version based on trigger source (branch, tag or static)
       - name: Set IMAGE_TAG (remove 'v' prefix)
@@ -48,21 +42,16 @@ jobs:
             # Handle feature branch (v*) push, extract version from the branch name
             echo "IMAGE_TAG=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
             echo "IMAGE_TAG extracted from feature branch name"
-          elif [[ "${GITHUB_REF_NAME}" == "main" && "${GITHUB_REF_TYPE}" == "branch" ]]; then
-            # Handle main branch push, extract version from git logs 
-            MERGED_BRANCH="$(git reflog show --format='%gs' -n 1 | awk '/^merge/ {print $2}' | cut -d ':' -f 1)"
-            echo "IMAGE_TAG=${MERGED_BRANCH#v}" >> $GITHUB_ENV
-            echo "IMAGE_TAG extracted from git reflog and merge commit)"
           fi
 
       - name: Check IMAGE_TAG version string is valid
         run: |
-          # Check valid version string for the IMAGE_TAG is set
           if [[ ! "${{ env.IMAGE_TAG }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-.*)?$ ]]; then
             echo "Current IMAGE_TAG value: ${{ env.IMAGE_TAG }}"
             echo "Could not extract valid version string for the IMAGE_TAG variable. Exiting workflow." >&2
             exit 1
           fi
+
       - name: Log in to GitHub container registry
         if: github.ref != 'refs/heads/main'
         run: echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
