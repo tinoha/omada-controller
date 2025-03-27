@@ -39,26 +39,27 @@ jobs:
           set -e
           if [[ -n "${{env.TEST_IMAGE_TAG}}" && "${GITHUB_REF_NAME}" == "workflow-test" ]]; then
             echo "IMAGE_TAG=${{ env.TEST_IMAGE_TAG }}" >> $GITHUB_ENV
-            echo "IMAGE_TAG set to ${IMAGE_TAG} (from static workflow variable)"
+            echo "IMAGE_TAG taken from static workflow variable"
           elif [[ "${GITHUB_REF_NAME}" == "main" && "${GITHUB_REF_TYPE}" == "tag" ]]; then
             # Handle tag push, extract version from the tag
             echo "IMAGE_TAG=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
-            echo "IMAGE_TAG set to ${IMAGE_TAG} (from tag)"
+            echo "IMAGE_TAG extracted from tag"
           elif [[ "${GITHUB_REF_NAME}" =~ ^v.* && "${GITHUB_REF_TYPE}" == "branch" ]]; then
             # Handle feature branch (v*) push, extract version from the branch name
             echo "IMAGE_TAG=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
-            echo "IMAGE_TAG set to ${IMAGE_TAG} (from feature branch name)"
+            echo "IMAGE_TAG extracted from feature branch name"
           elif [[ "${GITHUB_REF_NAME}" == "main" && "${GITHUB_REF_TYPE}" == "branch" ]]; then
             # Handle main branch push, extract version from git logs 
             MERGED_BRANCH="$(git reflog show --format='%gs' -n 1 | awk '/^merge/ {print $2}' | cut -d ':' -f 1)"
             echo "IMAGE_TAG=${MERGED_BRANCH#v}" >> $GITHUB_ENV
-            echo "IMAGE_TAG set to ${IMAGE_TAG} (from git reflog and merge commit)"
+            echo "IMAGE_TAG extracted from git reflog and merge commit)"
           fi
 
       - name: Check IMAGE_TAG version string is valid
         run: |
           # Check valid version string for the IMAGE_TAG is set
           if [[ ! "${{ env.IMAGE_TAG }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-.*)?$ ]]; then
+            echo "Current IMAGE_TAG value: ${{ env.IMAGE_TAG }}"
             echo "Could not extract valid version string for the IMAGE_TAG variable. Exiting workflow." >&2
             exit 1
           fi
