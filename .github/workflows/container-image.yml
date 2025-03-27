@@ -34,7 +34,7 @@ jobs:
           if [[ -n "${{env.TEST_IMAGE_TAG}}" && "${GITHUB_REF_NAME}" == "workflow-test" ]]; then
             echo "IMAGE_TAG=${{ env.TEST_IMAGE_TAG }}" >> $GITHUB_ENV
             echo "IMAGE_TAG taken from static workflow variable"
-          elif [[ "${GITHUB_REF_NAME}" == "main" && "${GITHUB_REF_TYPE}" == "tag" ]]; then
+          elif [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
             # Handle tag push, extract version from the tag
             echo "IMAGE_TAG=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
             echo "IMAGE_TAG extracted from tag"
@@ -53,11 +53,10 @@ jobs:
           fi
 
       - name: Log in to GitHub container registry
-        if: github.ref != 'refs/heads/main'
         run: echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Log in to Docker Hub container registry
-        if: github.ref == 'refs/heads/main'
+        if: startsWith(github.ref, 'refs/tags/')
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | podman login docker.io -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
       - name: Build the container image (with podman)
@@ -67,13 +66,12 @@ jobs:
         run: podman image ls
 
       - name: Push to GitHub container registry (GHCR)
-        if: github.ref != 'refs/heads/main'
         run: |
           podman tag localhost/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} && \
           podman push ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
       - name: Push to Docker Hub container registry
-        if: github.ref == 'refs/heads/main'
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           podman tag localhost/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ env.DOCKERHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} && \
           podman push ${{ env.DOCKERHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
