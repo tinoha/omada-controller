@@ -1,6 +1,6 @@
 # Omada Software Controller
 
-Container image for running TP-Link's [Omada Software Controller](https://www.tp-link.com/us/business-networking/omada-sdn-controller) to manage [Omada SDN network devices](https://www.tp-link.com/us/business-networking/all-omada/).
+Container image for running TP-Link's [Omada Software Controller](https://www.omadanetworks.com/us/business-networking/omada-controller-cloud-software/omada-software-controller/) to manage [Omada SDN network devices](https://www.tp-link.com/us/business-networking/all-omada/).
 
 ## About the Omada-Controller Image
 
