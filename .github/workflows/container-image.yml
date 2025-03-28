@@ -4,13 +4,14 @@ on:
   push:
     branches:
       - v* # Triggers for feature branches prefixed with 'v'
-      - workflow-test
+      - workflow-dev
     tags:
       - v* # Triggers for tags prefixed with 'v'
 
 env:
   IMAGE_NAME: omada-controller
   IMAGE_TAG:
+  IMAGE_TAG_SUFFIX:
   TEST_IMAGE_TAG: "5.15.20" # Set static value only when pushing branch workflow-test
   GITHUB_REGISTRY: ghcr.io/tinoha
   DOCKERHUB_REGISTRY: docker.io/tihal
@@ -31,8 +32,9 @@ jobs:
       - name: Set IMAGE_TAG (remove 'v' prefix)
         run: |
           set -e
-          if [[ -n "${{env.TEST_IMAGE_TAG}}" && "${GITHUB_REF_NAME}" == "workflow-test" ]]; then
+          if [[ -n "${{env.TEST_IMAGE_TAG}}" && "${GITHUB_REF_NAME}" == "workflow-dev" ]]; then
             echo "IMAGE_TAG=${{ env.TEST_IMAGE_TAG }}" >> $GITHUB_ENV
+            echo "IMAGE_TAG_SUFFIX=-dev" >> $GITHUB_ENV
             echo "IMAGE_TAG taken from static workflow variable"
           elif [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
             # Handle tag push, extract version from the tag
@@ -41,7 +43,12 @@ jobs:
           elif [[ "${GITHUB_REF_NAME}" =~ ^v.* && "${GITHUB_REF_TYPE}" == "branch" ]]; then
             # Handle feature branch (v*) push, extract version from the branch name
             echo "IMAGE_TAG=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+            echo "IMAGE_TAG_SUFFIX=-dev" >> $GITHUB_ENV
             echo "IMAGE_TAG extracted from feature branch name"
+          else 
+            echo "Using TEST_IMAGE_TAG as default"
+            echo "IMAGE_TAG=${{ env.TEST_IMAGE_TAG }}-dev" >> $GITHUB_ENV
+            echo "IMAGE_TAG_SUFFIX=-dev" >> $GITHUB_ENV
           fi
 
       - name: Check IMAGE_TAG version string is valid
@@ -67,8 +74,8 @@ jobs:
 
       - name: Push to GitHub container registry (GHCR)
         run: |
-          podman tag localhost/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} && \
-          podman push ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          podman tag localhost/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}${{ env.IMAGE_TAG_SUFFIX }} && \
+          podman push ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}${{ env.IMAGE_TAG_SUFFIX }}
 
       - name: Push to Docker Hub container registry
         if: startsWith(github.ref, 'refs/tags/')
