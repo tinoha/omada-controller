@@ -5,20 +5,20 @@ LABEL org.opencontainers.image.title="omada-controller"\
  org.opencontainers.image.base.name="docker.io/library/ubuntu:22.04"\
  org.opencontainers.image.version="5.15.20.16"
 
-ENV TZ="Etc/UTC"
+ENV TZ="Etc/UTC" DEBIAN_FRONTEND="noninteractive"
 
 WORKDIR /omada
 COPY entrypoint.sh omada_sudoers $WORKDIR
 
 # Add repositories, update system and install prerequisites
-RUN apt-get -y update && apt-get -y upgrade && \
+RUN apt-get -yq update && apt-get -yq upgrade && \
   apt-get -y install apt-utils curl gnupg sudo && \
   curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor && \
   echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list && \
-  apt-get update && \
+  apt-get -q update && \
   apt-get install -y mongodb-org=7.0.* mongodb-org-database=7.0.* mongodb-org-server=7.0.* mongodb-mongosh mongodb-org-mongos=7.0.* mongodb-org-tools=7.0.* \
   openjdk-17-jdk-headless jsvc && \
-  apt-get -y clean && apt-get -y autoremove
+  apt-get -yq clean && apt-get -yq autoremove
 
 # Install and configure Omada-Controller software 
 RUN  groupadd -g 550 omada && useradd -u 550 -g omada -d /opt/tplink/EAPController/data -s /usr/sbin/nologin -M omada && \
