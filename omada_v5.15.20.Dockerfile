@@ -3,15 +3,17 @@ FROM ubuntu:22.04 AS build-stage
   ENV TZ="Etc/UTC" DEBIAN_FRONTEND="noninteractive"
 
   RUN apt-get -yq update && apt-get -yq dist-upgrade && \
-    apt-get -yq install apt-utils curl openjdk-21-jdk-headless autoconf make gcc
+      apt-get -yq install apt-utils curl openjdk-21-jdk-headless autoconf make gcc
 
-  RUN curl -LO https://dlcdn.apache.org/commons/daemon/source/commons-daemon-1.4.1-src.tar.gz && \
-    tar xvzf commons-daemon-1.4.1-src.tar.gz && \
-    cd commons-daemon-1.4.1-src/src/native/unix/ && \
-    sh support/buildconf.sh && \
-    ./configure --with-java=/usr/lib/jvm/java-21-openjdk-amd64 && \ 
-    make && \
-    cp jsvc /usr/bin/ && ls -l /usr/bin/jsvc
+  RUN curl -fsSL -O https://dlcdn.apache.org/commons/daemon/source/commons-daemon-1.4.1-src.tar.gz && \
+      curl -fsSL -O https://downloads.apache.org/commons/daemon/source/commons-daemon-1.4.1-src.tar.gz.sha512 && \
+      sha512sum -c commons-daemon-1.4.1-src.tar.gz.sha512 && \
+      tar xvzf commons-daemon-1.4.1-src.tar.gz && \
+      cd commons-daemon-1.4.1-src/src/native/unix/ && \
+      sh support/buildconf.sh && \
+      ./configure --with-java=/usr/lib/jvm/java-21-openjdk-amd64 && \ 
+      make && \
+      cp jsvc /usr/bin/
 
 # Stage 2: Final
 FROM ubuntu:22.04 AS final-stage
@@ -25,7 +27,7 @@ ENV TZ="Etc/UTC" DEBIAN_FRONTEND="noninteractive"
 
 WORKDIR /omada
 COPY entrypoint.sh omada_sudoers $WORKDIR
-COPY --from=build-stage /usr/bin/jsvc /usr/bin/
+COPY --from=build-stage --chmod=555 /usr/bin/jsvc /usr/bin/
 
 # Add repositories, update system and install prerequisites
 RUN apt-get -yq update && apt-get -yq dist-upgrade && \  
@@ -34,7 +36,7 @@ RUN apt-get -yq update && apt-get -yq dist-upgrade && \
   echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list && \
   apt-get -q update && \
   apt-get -yq install mongodb-org=7.0.18 mongodb-org-database=7.0.18 mongodb-org-server=7.0.18 mongodb-mongosh mongodb-org-mongos=7.0.18 mongodb-org-tools=7.0.18 && \
-  apt-get -yq clean && apt-get -yq autoremove
+  apt-get -yq clean && apt-get -yq autoremove && rm -rf /var/lib/apt/lists/*
 
 # Install and configure Omada-Controller software
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
