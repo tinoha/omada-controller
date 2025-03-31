@@ -31,7 +31,7 @@ COPY --from=build-stage --chmod=555 /usr/bin/jsvc /usr/bin/
 
 # Add repositories, update system and install prerequisites
 RUN apt-get -yq update && apt-get -yq dist-upgrade && \  
-  apt-get -yq install apt-utils curl gnupg sudo openjdk-17-jdk-headless && \
+  apt-get -yq install apt-utils curl gnupg sudo openjdk-21-jdk-headless && \
   curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor && \
   echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list && \
   apt-get -q update && \
@@ -39,7 +39,7 @@ RUN apt-get -yq update && apt-get -yq dist-upgrade && \
   apt-get -yq clean && apt-get -yq autoremove && rm -rf /var/lib/apt/lists/*
 
 # Install and configure Omada-Controller software
-ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 RUN groupadd -g 550 omada && useradd -u 550 -g omada -d /opt/tplink/EAPController/data -s /usr/sbin/nologin -M omada && \
  curl -LO https://static.tp-link.com/upload/software/2025/202503/20250321/Omada_SDN_Controller_v5.15.20.16_linux_x64.deb && \
  ls -l ./Omada_SDN_Controller_v5.15.20.16_linux_x64.deb && \

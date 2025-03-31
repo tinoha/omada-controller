@@ -8,6 +8,18 @@ The image is built by installing TP-Link's standard Omada Controller [software p
 
 Image is built and tested with rootless Podman containers. However, as the omada control script `tpeap` can only be run as user root, `sudo` is used for invoking the script. Otherwise the container runs as non-root user (omada). Some extra linux capabilities are given to the container (`--cap-add`).
 
+## Software Versions in Image Releases
+
+| Image Version | Omada Controller | Ubuntu | Java(JDK)      | JSVC   | MongoDB |
+| ------------- | ---------------- | ------ | -------------- | ------ | ------- |
+| `5.15.20`     | 5.15.20.16       | 22.04  | OpenJDK 21.0.6 | 1.4.1  | 7.0.18  |
+| `5.14.26`     | 5.14.26.1        | 22.04  | OpenJDK 8      | 1.0.15 | 7.0.7   |
+
+**Notes:**
+
+- The `vX.Y.Z-N` format indicates updates to dependencies, scripts or Dockerfile while keeping the Omada version unchanged.
+- Only the latest few versions are available for download due to large image size (~2GB). If you rely on a specific version, please **keep a local copy** of the image. Alternatively, you can rebuild older versions using the provided `Dockerfile`.
+
 ## Usage on Docker/Podman
 
 ### Start & Stop
@@ -71,6 +83,14 @@ podman build --cap-add=DAC_READ_SEARCH,SETGID,SETUID,NET_BIND_SERVICE \
 ```
 
 For more information, visit the image source repository at [source](https://github.com/tinoha/omada-controller/) on GitHub.
+
+## Support and Feedback
+
+This project is both a personal hobby and a learning journey for me. While I occasionally build new container images for the TP-Link Omada Controller based on their software releases, I cannot commit to providing dedicated support or regular updates.
+
+However, if you encounter any issues, have feedback, or suggestions for improvements, feel free to reach out to me via email at [tinoha10@outlook.com](mailto:tinoha10@outlook.com). I do my best to incorporate suggestions and fix bugs when possible, but please note that this project is not actively maintained with formal support.
+
+I appreciate your understanding, and your feedback helps make the project better!
 
 ## License
 

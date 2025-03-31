@@ -3,8 +3,11 @@ name: Container Image CI
 on:
   push:
     branches:
-      - v* # Triggers for feature branches prefixed with 'v'
-      - workflow-dev
+      - release/v* # for new Omada controller versions
+      - bugfix/v* # for fixing build process issues
+      - deps/v* # for updating/patching dependencies (Mongo,Java,Ubuntu...)
+      - feature/v* # for adding new functionality
+      - workflow-dev # for testing workflow chnages on special branch
     tags:
       - v* # Triggers for tags prefixed with 'v'
 
@@ -40,9 +43,9 @@ jobs:
             # Handle tag push, extract version from the tag
             echo "IMAGE_TAG=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
             echo "IMAGE_TAG extracted from tag"
-          elif [[ "${GITHUB_REF_NAME}" =~ ^v.* && "${GITHUB_REF_TYPE}" == "branch" ]]; then
+          elif [[ "${GITHUB_REF_NAME}" =~ .*\/v.* && "${GITHUB_REF_TYPE}" == "branch" ]]; then
             # Handle feature branch (v*) push, extract version from the branch name
-            echo "IMAGE_TAG=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+            echo "IMAGE_TAG=${GITHUB_REF_NAME#*/v}" >> $GITHUB_ENV
             echo "IMAGE_TAG_SUFFIX=-dev" >> $GITHUB_ENV
             echo "IMAGE_TAG extracted from feature branch name"
           else 
