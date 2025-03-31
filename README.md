@@ -86,11 +86,11 @@ For more information, visit the image source repository at [source](https://gith
 
 ## Support and Feedback
 
-This project is both a personal hobby and a learning journey for me. While I occasionally build new container images for the TP-Link Omada Controller based on their software releases, I cannot commit to providing dedicated support or regular updates.
+This project is a personal hobby. While I occasionally create new container images for the TP-Link Omada Controller based on their software releases, I cannot guarantee dedicated support or regular updates.
 
-However, if you encounter any issues, have feedback, or suggestions for improvements, feel free to reach out to me via email at [tinoha10@outlook.com](mailto:tinoha10@outlook.com). I do my best to incorporate suggestions and fix bugs when possible, but please note that this project is not actively maintained with formal support.
+However, if you encounter any issues, have feedback, or suggestions for improvements, please feel free to contact me via email at [tinoha10@outlook.com](mailto:tinoha10@outlook.com). I will do my best to incorporate suggestions and address bugs when feasible. Please understand that this project is not actively maintained with formal support.
 
-I appreciate your understanding, and your feedback helps make the project better!
+Your understanding is appreciated, and your feedback is valuable in improving the project!"
 
 ## License
 
