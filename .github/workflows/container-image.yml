@@ -56,7 +56,7 @@ jobs:
 
       - name: Check IMAGE_TAG version string is valid
         run: |
-          if [[ ! "${{ env.IMAGE_TAG }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-.*)?$ ]]; then
+          if [[ ! "${{ env.IMAGE_TAG }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?(-.*)?$ ]]; then
             echo "Current IMAGE_TAG value: ${{ env.IMAGE_TAG }}"
             echo "Could not extract valid version string for the IMAGE_TAG variable. Exiting workflow." >&2
             exit 1
