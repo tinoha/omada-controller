@@ -19,7 +19,7 @@ spec:
     spec:
       initContainers:
         - name: init-data
-          image: docker.io/tihal/omada-controller:5.15.20
+          image: docker.io/tihal/omada-controller:5.15.20-1
           command: # Initialize omada-data volume only if it's empty and no init-data.lock exists.
             - "sh"
             - "-exc"
@@ -39,7 +39,7 @@ spec:
               mountPath: /data
       containers:
         - name: omada-controller
-          image: docker.io/tihal/omada-controller:5.15.20
+          image: docker.io/tihal/omada-controller:5.15.20-1
           env:
             - name: TZ
               value: Etc/UTC
@@ -52,12 +52,18 @@ spec:
             - containerPort: 8088
             - containerPort: 8043
             - containerPort: 8843
+            - containerPort: 19810
+              protocol: UDP
             - containerPort: 29810
+              protocol: UDP
+            - containerPort: 27001
               protocol: UDP
             - containerPort: 29811
             - containerPort: 29812
             - containerPort: 29813
             - containerPort: 29814
+            - containerPort: 29815
+            - containerPort: 29816
           securityContext:
             runAsUser: 550
             runAsGroup: 550

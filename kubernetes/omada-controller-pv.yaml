@@ -1,0 +1,56 @@
+# PersistentVolumes for Omada Controller
+# Example setup for single-node MicroK8s cluster using microk8s-hostpath (CSI) storage.
+#
+# Before applying this file, make sure the local directories exist on the host node:
+#   sudo mkdir -p /k8s-hostpath/omada/data
+#   sudo mkdir -p /k8s-hostpath/omada/logs
+#   sudo chown -R 1000:1000 /k8s-hostpath/omada   # (adjust UID:GID to match your pod)
+#
+# Note: Replace "MY_K8S_NODE_NAME" with the actual node name.
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: omada-data
+spec:
+  accessModes:
+    - ReadWriteOncePod
+  capacity:
+    storage: 8Gi
+  local:
+    path: /k8s-hostpath/omada/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - MY_K8S_NODE_NAME
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: microk8s-hostpath
+  volumeMode: Filesystem
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: omada-logs
+spec:
+  accessModes:
+    - ReadWriteOncePod
+  capacity:
+    storage: 4Gi
+  local:
+    path: /k8s-hostpath/omada/logs
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - MY_K8S_NODE_NAME
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: microk8s-hostpath
+  volumeMode: Filesystem

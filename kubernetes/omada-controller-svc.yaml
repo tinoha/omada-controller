@@ -5,8 +5,14 @@ metadata:
   namespace: omada
   labels:
     app: omada-controller
+  annotations:
+    konghq.com/protocol: "https"
+    konghq.com/verify: "false" # disables TLS verification (for self-signed certs)
+
 spec:
   type: LoadBalancer
+  # loadBalancerIP: <OMADA_CONTROLLER_IP> # Edit if you prefer to have certain IP from LB
+  # externalTrafficPolicy: Local # Preserve source IPs
   ports:
     - name: port-8088
       port: 8088
@@ -17,6 +23,14 @@ spec:
     - name: port-8843
       port: 8843
       targetPort: 8843
+    - name: port-19810
+      port: 19810
+      targetPort: 19810
+      protocol: UDP
+    - name: port-27001
+      port: 27001
+      targetPort: 27001
+      protocol: UDP
     - name: port-29810
       port: 29810
       targetPort: 29810
@@ -33,5 +47,11 @@ spec:
     - name: port-29814
       port: 29814
       targetPort: 29814
+    - name: port-29815
+      port: 29815
+      targetPort: 29815
+    - name: port-29816
+      port: 29816
+      targetPort: 29816
   selector:
     app: omada-controller

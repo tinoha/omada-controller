@@ -10,10 +10,11 @@ Image is built and tested with rootless Podman containers. However, as the omada
 
 ## Software Versions in Image Releases
 
-| Image Version | Omada Controller | Ubuntu | Java(JDK)      | JSVC   | MongoDB |
-| ------------- | ---------------- | ------ | -------------- | ------ | ------- |
-| `5.15.20`     | 5.15.20.16       | 22.04  | OpenJDK 21.0.6 | 1.4.1  | 7.0.18  |
-| `5.14.26`     | 5.14.26.1        | 22.04  | OpenJDK 8      | 1.0.15 | 7.0.7   |
+| Image Tag   | Omada Controller | Ubuntu | Java(JDK)      | JSVC   | MongoDB | Notes                 |
+| ----------- | ---------------- | ------ | -------------- | ------ | ------- | --------------------- |
+| `5.15.20-1` | 5.15.20.16       | 22.04  | OpenJDK 21.0.6 | 1.4.1  | 7.0.18  | fix:Add missing ports |
+| `5.15.20`   | 5.15.20.16       | 22.04  | OpenJDK 21.0.6 | 1.4.1  | 7.0.18  | initial rel.          |
+| `5.14.26`   | 5.14.26.1        | 22.04  | OpenJDK 8      | 1.0.15 | 7.0.7   |
 
 **Notes:**
 
@@ -34,11 +35,22 @@ podman run -d \
   -e TZ=Etc/UTC \
   -v omada-logs:/opt/tplink/EAPController/logs \
   -v omada-data:/opt/tplink/EAPController/data \
-  -p 8088:8088 -p 8043:8043 -p 8843:8843 -p 29810:29810/udp -p 29811:29811 -p 29812:29812 -p 29813:29813 -p 29814:29814 \
+  -p 8088:8088 \
+  -p 8043:8043 \
+  -p 8843:8843 \
+  -p 19810:19810/udp \
+  -p 27001:27001/udp \
+  -p 29810:29810/udp \
+  -p 29811:29811 \
+  -p 29812:29812 \
+  -p 29813:29813 \
+  -p 29814:29814 \
+  -p 29815:29815 \
+  -p 29816:29816 \
   --stop-timeout=300 \
   docker.io/tihal/omada-controller:<version>
 
-podman stop omada-controller
+
 ```
 
 Run arguments:
