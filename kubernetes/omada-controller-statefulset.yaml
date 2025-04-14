@@ -19,7 +19,7 @@ spec:
     spec:
       initContainers:
         - name: init-data
-          image: docker.io/tihal/omada-controller:5.15.20-1
+          image: docker.io/tihal/omada-controller:latest
           command: # Initialize omada-data volume only if it's empty and no init-data.lock exists.
             - "sh"
             - "-exc"
@@ -39,7 +39,7 @@ spec:
               mountPath: /data
       containers:
         - name: omada-controller
-          image: docker.io/tihal/omada-controller:5.15.20-1
+          image: docker.io/tihal/omada-controller:latest
           env:
             - name: TZ
               value: Etc/UTC
