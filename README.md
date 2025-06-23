@@ -12,6 +12,7 @@ Image is built and tested with rootless Podman containers. However, as the omada
 
 | Image Tag    | Omada Controller | Ubuntu | Java(JDK)      | JSVC   | MongoDB | Notes                 |
 | ------------ | ---------------- | ------ | -------------- | ------ | ------- | --------------------- |
+| `5.15.24.17` | 5.15.24.17       | 22.04  | OpenJDK 21.0.7 | 1.4.1  | 7.0.21  | Release 5.15.24.17    |
 | `5.15.20.18` | 5.15.20.18       | 22.04  | OpenJDK 21.0.6 | 1.4.1  | 7.0.18  | Release 5.15.20.18    |
 | `5.15.20-1`  | 5.15.20.16       | 22.04  | OpenJDK 21.0.6 | 1.4.1  | 7.0.18  | fix:Add missing ports |
 | `5.15.20`    | 5.15.20.16       | 22.04  | OpenJDK 21.0.6 | 1.4.1  | 7.0.18  | Release 5.15.20.16    |
