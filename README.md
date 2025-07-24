@@ -12,6 +12,7 @@ Image is built and tested with rootless Podman containers. However, as the omada
 
 | Image Tag    | Omada Controller | Ubuntu | Java(JDK)      | JSVC   | MongoDB | Notes                 |
 | ------------ | ---------------- | ------ | -------------- | ------ | ------- | --------------------- |
+| `5.15.24.18` | 5.15.24.18       | 22.04  | OpenJDK 21.0.7 | 1.4.1  | 7.0.22  | Release 5.15.24.18    |
 | `5.15.24.17` | 5.15.24.17       | 22.04  | OpenJDK 21.0.7 | 1.4.1  | 7.0.21  | Release 5.15.24.17    |
 | `5.15.20.18` | 5.15.20.18       | 22.04  | OpenJDK 21.0.6 | 1.4.1  | 7.0.18  | Release 5.15.20.18    |
 | `5.15.20-1`  | 5.15.20.16       | 22.04  | OpenJDK 21.0.6 | 1.4.1  | 7.0.18  | fix:Add missing ports |
@@ -100,11 +101,11 @@ For more information, visit the image source repository at [source](https://gith
 
 ## Support and Feedback
 
-This project is a personal hobby. While I occasionally create new container images for the TP-Link Omada Controller based on their software releases, I cannot guarantee dedicated support or regular updates.
+This image is built and maintained as part of my personal home network setup, where I use the Omada Controller to manage TP-Link devices. While I occasionally update the image based on new Omada releases, I cannot offer official support or guarantee regular updates.
 
-However, if you encounter any issues, have feedback, or suggestions for improvements, please feel free to contact me via email at [tinoha10@outlook.com](mailto:tinoha10@outlook.com). I will do my best to incorporate suggestions and address bugs when feasible. Please understand that this project is not actively maintained with formal support.
+If you encounter any issues or have suggestions, feel free to contact me at tinoha10@outlook.com. I’ll do my best to improve the project as time allows.
 
-Your understanding is appreciated, and your feedback is valuable in improving the project!"
+Your feedback is appreciated!
 
 ## License
 

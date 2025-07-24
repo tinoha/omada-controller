@@ -12,6 +12,7 @@ print_supported_versions() {
   echo "5.15.20"
   echo "5.15.20.18"
   echo "5.15.24.17"
+  echo "5.15.24.18"
 }
 
 # Argument handling
