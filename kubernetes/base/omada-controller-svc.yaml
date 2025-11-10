@@ -5,9 +5,9 @@ metadata:
   namespace: omada
   labels:
     app: omada-controller
-  annotations:
-    konghq.com/protocol: "https"
-    konghq.com/verify: "false" # disables TLS verification (for self-signed certs)
+  # annotations:
+  #  konghq.com/protocol: "https"
+  #  konghq.com/verify: "false" # disables TLS verification (for self-signed certs)
 
 spec:
   type: LoadBalancer
@@ -53,5 +53,8 @@ spec:
     - name: port-29816
       port: 29816
       targetPort: 29816
+    - name: port-29817
+      port: 29817
+      targetPort: 29817
   selector:
     app: omada-controller

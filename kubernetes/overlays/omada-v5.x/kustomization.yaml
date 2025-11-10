@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+
+images:
+  - name: docker.io/tihal/omada-controller
+    newTag: "5.15.24.18"
+
+patches:
+  # Add capabilities to omada-controller container (required for images v5.x)
+  - patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/securityContext/capabilities
+        value: {}
+      - op: add
+        path: /spec/template/spec/containers/0/securityContext/capabilities/add
+        value:
+          - DAC_READ_SEARCH
+          - SETGID
+          - SETUID
+          - NET_BIND_SERVICE
+    target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: omada-controller
+      namespace: omada

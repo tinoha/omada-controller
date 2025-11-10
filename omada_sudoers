@@ -1,1 +1,2 @@
-ALL  ALL=(ALL) NOPASSWD:/opt/tplink/EAPController/bin/control.sh,/usr/bin/tpeap
+Defaults    env_keep += "OMADA_USER"   # Allow sudo to pass OMADA_USER envrionbment variable to control.sh/tpeap
+ALL         ALL=(ALL) NOPASSWD:/opt/tplink/EAPController/bin/control.sh,/usr/bin/tpeap #Allow all users running tpeap as root

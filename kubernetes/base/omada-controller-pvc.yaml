@@ -1,5 +1,5 @@
 # PersistentVolumeClaims for Omada Controller
-# Example setup for single-node MicroK8s cluster using microk8s-hostpath (CSI) storage.
+# Example setup for single-node MicroK8s cluster using local-path storage(CSI) storage.
 
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -9,9 +9,9 @@ metadata:
   labels:
     app: omada-controller
 spec:
-  storageClassName: microk8s-hostpath
+  # storageClassName: local-path
   accessModes:
-    - ReadWriteOncePod
+    - ReadWriteOnce
   resources:
     requests:
       storage: 4Gi # Check official Omada docs and adjust acordingly
@@ -25,9 +25,9 @@ metadata:
   labels:
     app: omada-controller
 spec:
-  storageClassName: microk8s-hostpath
+  # storageClassName: local-path
   accessModes:
-    - ReadWriteOncePod
+    - ReadWriteOnce
   resources:
     requests:
       storage: 8Gi # Check official Omada docs and adjust acordingly

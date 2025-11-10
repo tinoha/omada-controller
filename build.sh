@@ -13,6 +13,7 @@ print_supported_versions() {
   echo "5.15.20.18"
   echo "5.15.24.17"
   echo "5.15.24.18"
+  echo "6.0.0.24"
 }
 
 # Argument handling
@@ -70,7 +71,6 @@ else
 fi
 
 podman build --cap-add=DAC_READ_SEARCH,SETGID,SETUID,NET_BIND_SERVICE \
-  --no-cache \
   --format docker \
   -t omada-controller:"${VER}" \
   -f "omada_v${VER}.Dockerfile" \

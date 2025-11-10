@@ -75,6 +75,14 @@ jobs:
       - name: List images
         run: podman image ls
 
+      - name: Test run the v6.x container
+        if: startsWith(env.IMAGE_TAG, '6.')
+        timeout-minutes: 4
+        run: |
+          output=$(podman run --rm localhost/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} sudo tpeap start)
+          echo "$output"
+          echo "$output" | grep -q "Started successfully."
+
       - name: Push to GitHub container registry (GHCR)
         run: |
           podman tag localhost/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}${{ env.IMAGE_TAG_SUFFIX }} && \
