@@ -4,13 +4,14 @@
 Container image for running TP-Link's [Omada Software Controller](https://www.omadanetworks.com/us/business-networking/omada-controller-cloud-software/omada-software-controller/) to manage [Omada SDN network devices](https://www.tp-link.com/us/business-networking/all-omada/).
 
 ## About the Omada-Controller Image
-The image is built by installing TP-Link's standard Omada Controller [software package](https://www.tp-link.com/us/support/download/omada-software-controller/) and its dependencies on a Ubuntu OS base image. No modifications were done to the original TP-Link provided software or files. Control (start/stop/status) of the Omada controller is implemented by utilizing the original `tpeap` script.
+The image is built by installing TP-Link's standard Omada Controller [software package](https://www.tp-link.com/us/support/download/omada-software-controller/) and its dependencies on a Ubuntu OS base image. No modifications are made to the original TP-Link software or files. Control (start/stop/status) of the Omada controller is implemented using the original `tpeap` script.
 
-Image is built and tested with rootless Podman containers. However, as the omada control script `tpeap` can only be run as user root, `sudo` is used for invoking the control script. Otherwise the container runs as non-root user (omada).
+The image is built and tested with rootless Podman containers. The container runs as a non-root user (`omada`) by default, while `sudo` is used only to invoke the `tpeap` control script, which requires root privileges.
 
 ## Software Versions in Image Releases
 | Image Tag    | Omada Controller | Ubuntu | Java(JDK)  | JSVC   | MongoDB | Notes                 |
 | ------------ | ---------------- | ------ | ---------- | ------ | ------- | --------------------- |
+| `6.1.0.19`   | 6.1.0.19         | 24.04  | OpenJDK 21 | 1.4.1  | 8.0.20  | Release 6.1.0.19      |
 | `6.0.0.25`   | 6.0.0.25         | 24.04  | OpenJDK 25 | 1.5.1  | 8.0.17  | Release 6.0.0.25      |
 | `6.0.0.24`   | 6.0.0.24         | 24.04  | OpenJDK 25 | 1.4.1  | 8.0.15  | Release 6.0.0.24      |
 | `5.15.24.18` | 5.15.24.18       | 22.04  | OpenJDK 21 | 1.4.1  | 7.0.22  | Release 5.15.24.18    |
@@ -24,6 +25,8 @@ Image is built and tested with rootless Podman containers. However, as the omada
 
 - The `vX.Y.Z-N` format indicates updates to dependencies, scripts or Dockerfile while keeping the Omada version unchanged.
 - Only the latest few versions are available for download due to large image size (~2GB). If you rely on a specific version, please **keep a local copy** of the image. Alternatively, you can rebuild older versions using the provided `Dockerfiles`.
+- Based on my experience, TP-Link documentation for required dependency versions (Java, jsvc, Ubuntu) is not always fully consistent across sources and appears to provide general guidance rather than a strict compatibility matrix.
+- The images provided here do not strictly follow the documented combinations, but instead use a set of versions that have been validated during build time and through continuous operation in my home environment. You may adjust the Dockerfile to use alternative versions based on your own requirements.
 
 ## Usage on Docker/Podman
 
@@ -51,6 +54,7 @@ podman run -d \
   -p 29814:29814 \
   -p 29815:29815 \
   -p 29816:29816 \
+  -p 29817:29817 \
   --stop-timeout=300 \
   docker.io/tihal/omada-controller:<version>
 ```
@@ -102,7 +106,7 @@ Persistent container data in `/opt/tplink/EAPController/logs` and `/opt/tplink/E
 ## Kubernetes Deployment
 For Kubernetes environments, example manifests are provided in the `kubernetes` directory. These manifests offer a starting point to deploy the Omada Controller container image on Kubernetes. Adjustments may be needed to match your specific environment.
 
-`Kustomize` overlays provide two deployment methods depending on the Omada Controller image version. Primary difference between the deployments is that v5.x images require additional capabilities, while v6.x images run with zero added capabilities.
+`Kustomize` overlays provide two deployment methods depending on the Omada Controller image version. The primary difference between the deployments is that v5.x images require additional capabilities, while v6.x images run with zero added capabilities.
 
 ```bash
 # For v5.x images
@@ -137,7 +141,7 @@ podman build \
 ```
 
 For v5.x Images:
-The v5.x build uses the .deb package with, which attempts to start the controller during installation. This requires the build process to have the necessary capabilities, to succesfully start the service.
+The v5.x build uses the .deb package, which attempts to start the controller during installation. This requires the build process to have the necessary capabilities, to succesfully start the service.
 ```bash
 podman build \
   --cap-add=DAC_READ_SEARCH,SETGID,SETUID,NET_BIND_SERVICE \
