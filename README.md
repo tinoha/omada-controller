@@ -11,6 +11,7 @@ The image is built and tested with rootless Podman containers. The container run
 ## Software Versions in Image Releases
 | Image Tag    | Omada Controller | Ubuntu | Java(JDK)  | JSVC   | MongoDB | Notes                 |
 | ------------ | ---------------- | ------ | ---------- | ------ | ------- | --------------------- |
+| `6.2.10.17`  | 6.2.10.17       | 24.04  | OpenJDK 21 | 1.4.1  | 8.0.23  | Release 6.2.10.17     |
 | `6.2.0.17`   | 6.2.0.17         | 24.04  | OpenJDK 21 | 1.4.1  | 8.0.23  | Release 6.2.0.17      |
 | `6.1.0.19`   | 6.1.0.19         | 24.04  | OpenJDK 21 | 1.4.1  | 8.0.20  | Release 6.1.0.19      |
 | `6.0.0.25`   | 6.0.0.25         | 24.04  | OpenJDK 25 | 1.5.1  | 8.0.17  | Release 6.0.0.25      |

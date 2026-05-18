@@ -5,4 +5,4 @@ resources:
 
 images:
   - name: docker.io/tihal/omada-controller
-    newTag: 6.2.0.17
+    newTag: 6.2.10.17
