@@ -16,6 +16,7 @@ print_supported_versions() {
   echo "6.0.0.24"
   echo "6.0.0.25"
   echo "6.1.0.19"
+  echo "6.2.0.17"
 }
 
 # Argument handling
@@ -72,7 +73,8 @@ else
   COMMIT_HASH="$(git log main -1 --format=%h)"
 fi
 
-podman build --cap-add=DAC_READ_SEARCH,SETGID,SETUID,NET_BIND_SERVICE \
+# podman build --cap-add=DAC_READ_SEARCH,SETGID,SETUID,NET_BIND_SERVICE \  # For v5.x images
+podman build \
   --format docker \
   -t omada-controller:"${VER}" \
   -f "omada_v${VER}.Dockerfile" \

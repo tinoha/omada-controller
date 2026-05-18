@@ -11,6 +11,7 @@ The image is built and tested with rootless Podman containers. The container run
 ## Software Versions in Image Releases
 | Image Tag    | Omada Controller | Ubuntu | Java(JDK)  | JSVC   | MongoDB | Notes                 |
 | ------------ | ---------------- | ------ | ---------- | ------ | ------- | --------------------- |
+| `6.2.0.17`   | 6.2.0.17         | 24.04  | OpenJDK 21 | 1.4.1  | 8.0.23  | Release 6.2.0.17      |
 | `6.1.0.19`   | 6.1.0.19         | 24.04  | OpenJDK 21 | 1.4.1  | 8.0.20  | Release 6.1.0.19      |
 | `6.0.0.25`   | 6.0.0.25         | 24.04  | OpenJDK 25 | 1.5.1  | 8.0.17  | Release 6.0.0.25      |
 | `6.0.0.24`   | 6.0.0.24         | 24.04  | OpenJDK 25 | 1.4.1  | 8.0.15  | Release 6.0.0.24      |
@@ -19,7 +20,7 @@ The image is built and tested with rootless Podman containers. The container run
 | `5.15.20.18` | 5.15.20.18       | 22.04  | OpenJDK 21 | 1.4.1  | 7.0.18  | Release 5.15.20.18    |
 | `5.15.20-1`  | 5.15.20.16       | 22.04  | OpenJDK 21 | 1.4.1  | 7.0.18  | fix:Add missing ports |
 | `5.15.20`    | 5.15.20.16       | 22.04  | OpenJDK 21 | 1.4.1  | 7.0.18  | Release 5.15.20.16    |
-| `5.14.26`    | 5.14.26.1        | 22.04  | OpenJDK 8  | 1.0.15 | 7.0.7   |
+| `5.14.26`    | 5.14.26.1        | 22.04  | OpenJDK 8  | 1.0.15 | 7.0.7   | Release 5.14.26.1     |
 
 **Notes:**
 
