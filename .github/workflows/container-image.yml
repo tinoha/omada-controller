@@ -25,10 +25,10 @@ jobs:
     timeout-minutes: 15
     permissions:
       packages: write # Grants permission to push Docker images to GHCR
-      contents: read # Allows reading repository content (needed for actions/checkout)
+      contents: write # Allows reading repository content (actions/checkout) and writing (gh release...)
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         name: Checkout repository
 
       # Extract version based on trigger source (branch, tag or static)
@@ -86,10 +86,60 @@ jobs:
       - name: Push to GitHub container registry (GHCR)
         run: |
           podman tag localhost/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}${{ env.IMAGE_TAG_SUFFIX }} && \
-          podman push ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}${{ env.IMAGE_TAG_SUFFIX }}
+          podman push --digestfile ghcr.digest ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}${{ env.IMAGE_TAG_SUFFIX }}
+          echo "GHCR_DIGEST=$(cat ghcr.digest)" >> "$GITHUB_ENV"
 
       - name: Push to Docker Hub container registry
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           podman tag localhost/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ env.DOCKERHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} && \
-          podman push ${{ env.DOCKERHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          podman push --digestfile dockerhub.digest  ${{ env.DOCKERHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          echo "DOCKERHUB_DIGEST=$(cat dockerhub.digest)" >> "$GITHUB_ENV"
+
+      - name: Create or update GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail  # Exit on error, treat unset variables as errors, and fail if any command in a pipeline fails
+          
+          # Prepare variables for release notes with image references and digests
+          GHCR_IMAGE="${GITHUB_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+          DOCKERHUB_IMAGE="${DOCKERHUB_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+          GHCR_DIGEST_IMAGE="${GITHUB_REGISTRY}/${IMAGE_NAME}@${GHCR_DIGEST}"
+          DOCKERHUB_DIGEST_IMAGE="${DOCKERHUB_REGISTRY}/${IMAGE_NAME}@${DOCKERHUB_DIGEST}"
+          
+          # Render release notes with image references and digests
+          {
+            echo "Published container images for version \`${TAG}\`"
+            echo
+            echo "## Images"
+            echo
+            echo '```bash'
+            echo "docker pull ${GHCR_IMAGE}"
+            echo "docker pull ${DOCKERHUB_IMAGE}"
+            echo '```'
+            echo
+            echo "## Image digests"
+            echo
+            echo '```text'
+            echo "${GHCR_DIGEST_IMAGE}"
+            echo "${DOCKERHUB_DIGEST_IMAGE}"
+            echo '```'
+            echo
+            echo "See the README for usage and deployment documentation."
+          } > release-notes.md
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" \
+              --title "${TAG}" \
+              --notes-file release-notes.md \
+              --latest
+          else
+            gh release create "$TAG" \
+              --title "${TAG}" \
+              --notes-file release-notes.md \
+              --verify-tag \
+              --latest
+          fi
