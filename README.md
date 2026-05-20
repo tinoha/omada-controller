@@ -155,9 +155,11 @@ For more information, visit the image source repository at [source](https://gith
 
 ## Support and Feedback
 
-This image is built and maintained as part of my personal home network setup, where I use the Omada Controller to manage TP-Link devices. While I occasionally update the image based on new Omada releases, I cannot offer official support or guarantee regular updates.
+This image is built and maintained as part of my personal home network setup, where I use Omada Software Controller to manage TP-Link devices. I occasionally update the image based on new Omada releases, but I cannot guarantee regular updates.
 
-If you encounter any issues or have suggestions, feel free to contact me at tinoha10@outlook.com. I’ll do my best to improve the project as time allows.
+This project is not affiliated with, endorsed by, or supported by TP-Link. For issues with the Omada software itself, please refer to TP-Link’s official support channels.
+
+If you encounter issues specific to this container image or have suggestions for improvement, feel free to contact me at tinoha10@outlook.com. I’ll do my best to improve the project as time allows.
 
 Your feedback is appreciated!
 
@@ -166,5 +168,8 @@ Your feedback is appreciated!
 My personal work, including the scripts, Dockerfile, and configuration files in this repository, are licensed under the MIT License. See the [LICENSE](https://github.com/tinoha/omada-controller/blob/main/LICENSE.txt) file for details.
 
 ### Third-Party Software
+This project provides an unofficial container image for TP-Link Omada Software Controller. It is not affiliated with, endorsed by, or supported by TP-Link.
 
-This project uses TP-Link Omada Controller, MongoDB, Java, and the Ubuntu base image, which are each licensed separately. Please consult each respective software’s documentation for detailed licensing information. This statement also applies to any other third-party software included in this project, whether specifically listed or not.
+The TP-Link Omada Software Controller is third-party software and is licensed separately by TP-Link. This project does not modify the Omada application itself; the container image installs and runs the Omada software from TP-Link’s official download source.
+
+This project also uses MongoDB, Java, the Ubuntu base image, and other third-party software, each of which is licensed separately. Please consult each respective software’s documentation for detailed licensing information. This statement also applies to any other third-party software included in this project, whether specifically listed or not.

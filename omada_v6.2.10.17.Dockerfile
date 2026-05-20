@@ -67,7 +67,7 @@ ENV TZ=${TZ} DEBIAN_FRONTEND="noninteractive"
 ENV OMADA_USER=${OMADA_USER}
 
 LABEL org.opencontainers.image.title="omada-controller"\
- org.opencontainers.image.description="TP-Link Omada Software Controller"\
+ org.opencontainers.image.description="Container image for TP-Link Omada Software Controller"\
  org.opencontainers.image.base.name="docker.io/library/${OS_BASE}"\
  org.opencontainers.image.version="${OMADA_VER}"
 

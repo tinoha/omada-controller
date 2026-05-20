@@ -1,4 +1,11 @@
 #!/bin/bash
+# Build script for the Omada Controller Docker image.
+
+# Set default values for image metadata labels, which can be overridden by environment variables
+IMAGE_URL="${IMAGE_URL:-https://github.com/tinoha/omada-controller}"
+IMAGE_SOURCE="${IMAGE_SOURCE:-https://github.com/tinoha/omada-controller}"
+IMAGE_DOCUMENTATION="${IMAGE_DOCUMENTATION:-https://github.com/tinoha/omada-controller/blob/main/README.md}"
+
 
 # Default Omada version
 VER=""
@@ -74,14 +81,22 @@ else
   COMMIT_HASH="$(git log main -1 --format=%h)"
 fi
 
-# podman build --cap-add=DAC_READ_SEARCH,SETGID,SETUID,NET_BIND_SERVICE \  # For v5.x images
+# Build the image with the specified version and labels
+# Use additional build arguments for v5.x images
+if [[ "${VER}" == 5.* ]]; then
+  BUILD_ARGS+=(--cap-add=DAC_READ_SEARCH,SETGID,SETUID,NET_BIND_SERVICE)
+else
+  BUILD_ARGS=()
+fi
+
 podman build \
+  "${BUILD_ARGS[@]}" \
   --format docker \
   -t omada-controller:"${VER}" \
   -f "omada_v${VER}.Dockerfile" \
-  --label org.opencontainers.image.authors="Tino <tinoha10@outlook.com>" \
-  --label org.opencontainers.image.url="https://github.com/tinoha/omada-controller" \
-  --label org.opencontainers.image.documentation="https://github.com/tinoha/omada-controller/blob/main/README.md" \
+  --label org.opencontainers.image.url="${IMAGE_URL}" \
+  --label org.opencontainers.image.source="${IMAGE_SOURCE}" \
+  --label org.opencontainers.image.documentation="${IMAGE_DOCUMENTATION}" \
   --label org.opencontainers.image.version="${VER}" \
   --label org.opencontainers.image.created="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
   --label org.opencontainers.image.revision="${COMMIT_HASH}" \
