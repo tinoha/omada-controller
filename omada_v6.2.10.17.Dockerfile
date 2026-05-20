@@ -1,9 +1,14 @@
-# Global Arguments
-ARG TZ="Etc/UTC"
+# Global build arguments with default values
 ARG OS_BASE="ubuntu:24.04"
 ARG MONGO_VER="8.0.23"
+ARG TZ="Etc/UTC"
 ARG OMADA_VER="6.2.10.17"
 ARG OMADA_DOWNLOAD_URL="https://static.tp-link.com/upload/software/2026/202604/20260429/Omada_Network_Application_v6.2.10.17_linux_x64_20260428102037.tar.gz"
+# Optional checksum for the Omada package.
+# TP-Link does not publish official checksums, so this value is maintained manually.
+# Set to empty to skip verification.
+# ARG OMADA_SHA512=""
+ARG OMADA_SHA512="5b6b6aea3b795fa24f3b0f93eb49155a231b6d2a1245ef76771c940df211145c531d03eb6d1b60017283d1be49307432d056431e09542aa93aea219840799b85"  
 ARG OMADA_USER="omada"
 ARG OMADA_UID="550"
 ARG OMADA_GID="550"
@@ -26,7 +31,8 @@ FROM ${OS_BASE} AS build-jsvc
   RUN apt-get -yq update && \
       apt-get -yq install apt-utils curl ${JAVA_PKG} libcap-dev autoconf make gcc
 
-  RUN set -ex; \
+  RUN set -e; \
+    echo "==> Downloading and building jsvc ${JSVC_VER}" && \
     curl -fsSL -O "${JSVC_BASE_URL}/${JSVC_ARCHIVE}" && \
     curl -fsSL -O "${JSVC_BASE_URL}/${JSVC_ARCHIVE}.sha512" && \
     # Verify checksum
@@ -50,6 +56,7 @@ ARG OS_BASE
 ARG MONGO_VER
 ARG OMADA_VER
 ARG OMADA_DOWNLOAD_URL
+ARG OMADA_SHA512
 ARG OMADA_USER
 ARG OMADA_UID
 ARG OMADA_GID
@@ -65,14 +72,15 @@ LABEL org.opencontainers.image.title="omada-controller"\
  org.opencontainers.image.version="${OMADA_VER}"
 
 WORKDIR /omada
-COPY --chmod=555 healthcheck.sh entrypoint.sh omada_sudoers $WORKDIR
+COPY --chmod=555 healthcheck.sh entrypoint.sh omada_sudoers ./
 COPY --from=build-jsvc --chmod=555 /usr/bin/jsvc /usr/bin/
 
 # Add repositories, update system and install prerequisites
 RUN apt-get -yq update && \
+  echo "==> Installing prerequisites and MongoDB ${MONGO_VER}" && \
   apt-get -yq --no-install-recommends install apt-utils curl gnupg sudo ${JAVA_PKG} libcap2 && \
   curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg --dearmor && \
-  echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list && \
+  echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-8.0.list && \
   apt-get -q update && \
   apt-get --no-install-recommends -yq install \
    mongodb-org=${MONGO_VER} \
@@ -86,19 +94,27 @@ RUN apt-get -yq update && \
   apt-get -yq clean && apt-get -yq autoremove && rm -rf /var/lib/apt/lists/*
 
 # Install and configure Omada-Controller software
-ENV JAVA_HOME=${JAVA_HOME} 
-RUN groupadd -g ${OMADA_GID} ${OMADA_USER} && \
+ENV JAVA_HOME=${JAVA_HOME}
+RUN echo "==> Creating omada user and group" && \
+  groupadd -g ${OMADA_GID} ${OMADA_USER} && \
   useradd -u ${OMADA_UID} -g ${OMADA_GID} -d /opt/tplink/EAPController/data -s /usr/sbin/nologin -M ${OMADA_USER} && \
+  echo "==> Installing sudoers file" && \
   chmod 0440 omada_sudoers && mv omada_sudoers /etc/sudoers.d && \
-  curl -fsSLO ${OMADA_DOWNLOAD_URL} && \
-  OMADA_FILE="$(basename ${OMADA_DOWNLOAD_URL})" && \
+  echo "==> Downloading Omada package" && \
+  curl -fsSLO "${OMADA_DOWNLOAD_URL}" && \
+  OMADA_FILE="$(basename "${OMADA_DOWNLOAD_URL}")" && \
+  if [ -n "${OMADA_SHA512}" ]; then echo "${OMADA_SHA512}  ./${OMADA_FILE}" | sha512sum -c -; else echo "Warning: OMADA_SHA512 is not set; skipping package checksum verification"; fi && \
+  echo "==> Extracting and installing Omada package" && \
   OMADA_DIR="${OMADA_FILE%_*.tar.gz}" && \
   ls -l ./${OMADA_FILE} && sha512sum ./${OMADA_FILE} && \
-  tar xzvfp ./${OMADA_FILE} && \
+  tar xzfp ./${OMADA_FILE} && \
   # dpkg -i --ignore-depends=jsvc,java17-runtime,java17-runtime-headless,jdk-17 ./${OMADA_FILE} && \
+  echo "==> Installing Omada in cluster mode" && \
   (cd ${OMADA_DIR} && echo "y" | bash ./install.sh init-cluster-mode) && \
+  echo "==> Creating writable directories and setting permissions" && \
   mkdir -p /opt/tplink/EAPController/logs /opt/tplink/EAPController/data /opt/tplink/EAPController/work && \
   chown -R ${OMADA_UID}:${OMADA_GID} /opt/tplink/EAPController/logs /opt/tplink/EAPController/data /opt/tplink/EAPController/work /opt/tplink/EAPController/properties && \
+  echo "==> Cleaning up" && \
   rm -fr ${OMADA_DIR} && rm -f ${OMADA_FILE}
 
 EXPOSE 8088 8043 8843 19810/udp 27001/udp 29810/udp 29811 29812 29813 29814 29815 29816 29817
