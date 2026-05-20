@@ -78,7 +78,7 @@ if [[ -n "${GITHUB_SHA}" ]]; then
   COMMIT_HASH="${GITHUB_SHA}"
 else
   # For local runs get the hash from git.
-  COMMIT_HASH="$(git log main -1 --format=%h)"
+  COMMIT_HASH="$(git rev-parse HEAD 2>/dev/null || echo "unknown")"
 fi
 
 # Build the image with the specified version and labels
