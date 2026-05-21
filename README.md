@@ -9,6 +9,8 @@ The image is built by installing TP-Link's standard Omada Controller [software p
 The image is built and tested with rootless Podman containers. The container runs as a non-root user (`omada`) by default, while `sudo` is used only to invoke the `tpeap` control script, which requires root privileges.
 
 ## Software Versions in Image Releases
+The table shows which Omada Software Controller version is packaged in each image tag.
+
 | Image Tag    | Omada Controller | Ubuntu | Java(JDK)  | JSVC   | MongoDB | Notes                 |
 | ------------ | ---------------- | ------ | ---------- | ------ | ------- | --------------------- |
 | `6.2.10.17`  | 6.2.10.17       | 24.04  | OpenJDK 21 | 1.4.1  | 8.0.23  | Release 6.2.10.17     |
@@ -24,11 +26,9 @@ The image is built and tested with rootless Podman containers. The container run
 | `5.14.26`    | 5.14.26.1        | 22.04  | OpenJDK 8  | 1.0.15 | 7.0.7   | Release 5.14.26.1     |
 
 **Notes:**
-
-- The `vX.Y.Z-N` format indicates updates to dependencies, scripts or Dockerfile while keeping the Omada version unchanged.
-- Only the latest few versions are available for download due to large image size (~2GB). If you rely on a specific version, please **keep a local copy** of the image. Alternatively, you can rebuild older versions using the provided `Dockerfiles`.
-- Based on my experience, TP-Link documentation for required dependency versions (Java, jsvc, Ubuntu) is not always fully consistent across sources and appears to provide general guidance rather than a strict compatibility matrix.
-- The images provided here do not strictly follow the documented combinations, but instead use a set of versions that have been validated during build time and through continuous operation in my home environment. You may adjust the Dockerfile to use alternative versions based on your own requirements.
+- Older image versions may be removed over time due to image size. If you rely on a specific version, keep a local copy or rebuild it using the corresponding Dockerfile.
+- Development images use the `-dev` suffix and may be replaced or removed without notice.
+- Older Dockerfiles are kept as a reference for rebuilding previous image versions, but may require updates if upstream download URLs, package repositories, or third-party artifacts change over time.
 
 ## Usage on Docker/Podman
 
@@ -138,7 +138,7 @@ The v6.x build uses the *.tar.gz package and its install script with `init-clust
 ```bash
 podman build \
   --format docker \
-  --file omada_<version>.Dockerfile \
+  --file omada_v<version>.Dockerfile \
   -t omada-controller:<version> .
 ```
 
@@ -148,7 +148,7 @@ The v5.x build uses the .deb package, which attempts to start the controller dur
 podman build \
   --cap-add=DAC_READ_SEARCH,SETGID,SETUID,NET_BIND_SERVICE \
   --format docker \
-  --file omada_<version>.Dockerfile \
+  --file omada_v<version>.Dockerfile \
   -t omada-controller:<version> .
 ```
 For more information, visit the image source repository at [source](https://github.com/tinoha/omada-controller/) on GitHub.
@@ -168,7 +168,7 @@ Your feedback is appreciated!
 My personal work, including the scripts, Dockerfile, and configuration files in this repository, are licensed under the MIT License. See the [LICENSE](https://github.com/tinoha/omada-controller/blob/main/LICENSE.txt) file for details.
 
 ### Third-Party Software
-This project provides an unofficial container image for TP-Link Omada Software Controller. It is not affiliated with, endorsed by, or supported by TP-Link.
+This project provides an unofficial container image for TP-Link Omada Software Controller.
 
 The TP-Link Omada Software Controller is third-party software and is licensed separately by TP-Link. This project does not modify the Omada application itself; the container image installs and runs the Omada software from TP-Link’s official download source.
 
