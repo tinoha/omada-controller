@@ -1,5 +1,6 @@
 # Omada Software Controller
 [![Container Image CI](https://github.com/tinoha/omada-controller/actions/workflows/container-image.yml/badge.svg)](https://github.com/tinoha/omada-controller/actions/workflows/container-image.yml)
+[![GitHub Release](https://img.shields.io/github/v/release/tinoha/omada-controller?sort=semver)](https://github.com/tinoha/omada-controller/releases/latest)
 
 Container image for running TP-Link's [Omada Software Controller](https://www.omadanetworks.com/us/business-networking/omada-controller-cloud-software/omada-software-controller/) to manage [Omada SDN network devices](https://www.tp-link.com/us/business-networking/all-omada/).
 
@@ -27,8 +28,12 @@ The table shows which Omada Software Controller version is packaged in each imag
 
 **Notes:**
 - Older image versions may be removed over time due to image size. If you rely on a specific version, keep a local copy or rebuild it using the corresponding Dockerfile.
-- Development images use the `-dev` suffix and may be replaced or removed without notice.
 - Older Dockerfiles are kept as a reference for rebuilding previous image versions, but may require updates if upstream download URLs, package repositories, or third-party artifacts change over time.
+
+### Image Tag Policy
+Published release tags are intended to be immutable. Tags matching the Omada Software Controller version, such as `6.2.10.17`, identify the first image build for that TP-Link Omada version. If the image is rebuilt with container-level fixes, dependency updates, or packaging changes while the Omada version remains unchanged, a revision suffix is used, for example `6.2.10.17-r1`.
+
+Development tags ending in `-dev` may be replaced or removed without notice.
 
 ## Usage on Docker/Podman
 
