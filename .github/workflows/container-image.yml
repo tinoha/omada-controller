@@ -50,13 +50,14 @@ jobs:
             echo "IMAGE_TAG extracted from feature branch name"
           else 
             echo "Using TEST_IMAGE_TAG as default"
-            echo "IMAGE_TAG=${{ env.TEST_IMAGE_TAG }}-dev" >> $GITHUB_ENV
+            echo "IMAGE_TAG=${{ env.TEST_IMAGE_TAG }}" >> $GITHUB_ENV
             echo "IMAGE_TAG_SUFFIX=-dev" >> $GITHUB_ENV
           fi
 
       - name: Check IMAGE_TAG version string is valid
         run: |
-          if [[ ! "${{ env.IMAGE_TAG }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?(-.*)?$ ]]; then
+          # Accept release tags like 6.2.10.17 / v6.2.10.17 and dev tags like 6.x-dev / v6.x-build-dev
+          if [[ ! "${{ env.IMAGE_TAG }}" =~ ^v?([0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?|[0-9]+\.x)(-[A-Za-z0-9_.-]+)?$ ]]; then
             echo "Current IMAGE_TAG value: ${{ env.IMAGE_TAG }}"
             echo "Could not extract valid version string for the IMAGE_TAG variable. Exiting workflow." >&2
             exit 1
@@ -70,7 +71,9 @@ jobs:
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | podman login docker.io -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
       - name: Build the container image (with podman)
-        run: ./build.sh --set-ver ${{ env.IMAGE_TAG }}
+        run: |
+          echo "./build.sh --set-ver ${{ env.IMAGE_TAG }}"
+          ./build.sh --set-ver ${{ env.IMAGE_TAG }}
 
       - name: List images
         run: podman image ls
@@ -100,7 +103,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.ref_name }}
+          # TAG: ${{ github.ref_name }}
         run: |
           set -euo pipefail  # Exit on error, treat unset variables as errors, and fail if any command in a pipeline fails
           
@@ -112,7 +115,7 @@ jobs:
           
           # Render release notes with image references and digests
           {
-            echo "Published container images for version \`${TAG}\`"
+            echo "Published container images for version \`${IMAGE_TAG}\`"
             echo
             echo "## Images"
             echo

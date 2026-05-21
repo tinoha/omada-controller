@@ -63,14 +63,14 @@ fi
 # Check Dockerfile for VER exists
 if [[ ! (-f "./omada_v${VER}.Dockerfile") ]]; then
   echo "File ./omada_v${VER}.Dockerfile was not found" 
-  echo "Use --help to see available options."
+  echo "Use ./build.sh --help to see available versions."
   exit 1
 fi
 
 # Continue script execution with VER
-echo "Used Omada version: ${VER}"
+echo "Omada Controller version: ${VER}"
 
-echo "Building image omada-controller for ${VER} version..."
+echo "Building omada-controller image for ${VER} version..."
 echo ""
 
 # Check if GITHUB_SHA is set (indicating that the script is running in GitHub Actions)
