@@ -99,7 +99,7 @@ jobs:
           podman push --digestfile dockerhub.digest  ${{ env.DOCKERHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           echo "DOCKERHUB_DIGEST=$(cat dockerhub.digest)" >> "$GITHUB_ENV"
 
-      - name: Create or update GitHub Release
+      - name: Create GitHub release
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GH_TOKEN: ${{ github.token }}
@@ -134,15 +134,8 @@ jobs:
             echo "See the README for usage and deployment documentation."
           } > release-notes.md
 
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release edit "$TAG" \
-              --title "${TAG}" \
-              --notes-file release-notes.md \
-              --latest
-          else
-            gh release create "$TAG" \
+          gh release create "$TAG" \
               --title "${TAG}" \
               --notes-file release-notes.md \
               --verify-tag \
               --latest
-          fi
