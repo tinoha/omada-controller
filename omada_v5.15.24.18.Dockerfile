@@ -15,8 +15,8 @@ FROM ${OS_BASE} AS build-stage
   RUN apt-get -yq update && apt-get -yq dist-upgrade && \
       apt-get -yq install apt-utils curl openjdk-21-jdk-headless autoconf make gcc
 
-  RUN curl -fsSL -O https://dlcdn.apache.org/commons/daemon/source/commons-daemon-1.4.1-src.tar.gz && \
-      curl -fsSL -O https://downloads.apache.org/commons/daemon/source/commons-daemon-1.4.1-src.tar.gz.sha512 && \
+  RUN curl -fsSL -O https://archive.apache.org/dist/commons/daemon/source/commons-daemon-1.4.1-src.tar.gz && \
+      curl -fsSL -O https://archive.apache.org/dist/commons/daemon/source/commons-daemon-1.4.1-src.tar.gz.sha512 && \
       sha512sum -c commons-daemon-1.4.1-src.tar.gz.sha512 && \
       tar xvzf commons-daemon-1.4.1-src.tar.gz && \
       cd commons-daemon-1.4.1-src/src/native/unix/ && \
@@ -37,7 +37,7 @@ ARG MONGO_VER
 ENV TZ=${TZ} DEBIAN_FRONTEND="noninteractive"
 
 LABEL org.opencontainers.image.title="omada-controller"\
- org.opencontainers.image.description="TP-Link Omada Software Controller"\
+ org.opencontainers.image.description="Container image for TP-Link Omada Software Controller"\
  org.opencontainers.image.base.name="docker.io/library/${OS_BASE}"\
  org.opencontainers.image.version="${OMADA_VER}"
 
