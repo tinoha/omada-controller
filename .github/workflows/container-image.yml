@@ -134,8 +134,8 @@ jobs:
             echo "See the README for usage and deployment documentation."
           } > release-notes.md
 
-          gh release create "$TAG" \
-              --title "${TAG}" \
+          gh release create "${IMAGE_TAG}" \
+              --title "${IMAGE_TAG}" \
               --notes-file release-notes.md \
               --verify-tag \
               --latest
