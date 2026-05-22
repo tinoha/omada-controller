@@ -29,7 +29,7 @@ FROM ${OS_BASE} AS build-jsvc
   ARG JSVC_ARCHIVE="commons-daemon-${JSVC_VER}-src.tar.gz"
 
   RUN apt-get -yq update && \
-      apt-get -yq install apt-utils curl ${JAVA_PKG} libcap-dev autoconf make gcc
+      apt-get -yq install apt-utils file curl ${JAVA_PKG} libcap-dev autoconf make gcc
 
   RUN set -e; \
     echo "==> Downloading and building jsvc ${JSVC_VER}" && \
@@ -39,11 +39,15 @@ FROM ${OS_BASE} AS build-jsvc
     sha512sum -c "${JSVC_ARCHIVE}.sha512" && \
     tar xzf "${JSVC_ARCHIVE}" && \
     cd "commons-daemon-${JSVC_VER}-src/src/native/unix/" && \
-    export CFLAGS="-m64" LDFLAGS="-m64" && \
     sh support/buildconf.sh && \
     ./configure --with-java="${JAVA_HOME}" && \
     make && \
     cp jsvc /usr/bin/jsvc && \
+    echo "==> Built jsvc binary information" && \
+    echo "File information:" && \
+    file /usr/bin/jsvc && \
+    echo "Shared library dependencies:" && \
+    ldd /usr/bin/jsvc && \
     # Cleanup
     cd / && \
     rm -rf "commons-daemon-${JSVC_VER}-src" "commons-daemon-${JSVC_VER}-src.tar.gz"* /var/lib/apt/lists/*
