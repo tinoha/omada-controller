@@ -46,7 +46,7 @@ FROM ${OS_BASE} AS build-jsvc
     cp jsvc /usr/bin/jsvc && \
     # Cleanup
     cd / && \
-    rm -rf "commons-daemon-${JSVC_VER}-src" "commons-daemon-${JSVC_VER}-src.tar.gz"*
+    rm -rf "commons-daemon-${JSVC_VER}-src" "commons-daemon-${JSVC_VER}-src.tar.gz"* /var/lib/apt/lists/*
 
 # Stage 2: Final
 FROM ${OS_BASE} AS final-stage
@@ -78,9 +78,9 @@ COPY --from=build-jsvc --chmod=555 /usr/bin/jsvc /usr/bin/
 # Add repositories, update system and install prerequisites
 RUN apt-get -yq update && \
   echo "==> Installing prerequisites and MongoDB ${MONGO_VER}" && \
-  apt-get -yq --no-install-recommends install apt-utils curl gnupg sudo ${JAVA_PKG} libcap2 && \
+  apt-get -yq --no-install-recommends install curl gnupg sudo ${JAVA_PKG} libcap2 && \
   curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg --dearmor && \
-  echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-8.0.list && \
+  echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" > /etc/apt/sources.list.d/mongodb-org-8.0.list && \
   apt-get -q update && \
   apt-get --no-install-recommends -yq install \
    mongodb-org=${MONGO_VER} \
@@ -91,7 +91,7 @@ RUN apt-get -yq update && \
    mongodb-org-mongos=${MONGO_VER} \
    mongodb-org-tools=${MONGO_VER} \
    mongodb-org-database-tools-extra=${MONGO_VER} && \
-  apt-get -yq clean && apt-get -yq autoremove && rm -rf /var/lib/apt/lists/*
+  apt-get -yq clean && rm -rf /var/lib/apt/lists/*
 
 # Install and configure Omada-Controller software
 ENV JAVA_HOME=${JAVA_HOME}
@@ -106,7 +106,7 @@ RUN echo "==> Creating omada user and group" && \
   if [ -n "${OMADA_SHA512}" ]; then echo "${OMADA_SHA512}  ./${OMADA_FILE}" | sha512sum -c -; else echo "Warning: OMADA_SHA512 is not set; skipping package checksum verification"; fi && \
   echo "==> Extracting and installing Omada package" && \
   OMADA_DIR="${OMADA_FILE%_*.tar.gz}" && \
-  ls -l ./${OMADA_FILE} && sha512sum ./${OMADA_FILE} && \
+  ls -l ./${OMADA_FILE} && \
   tar xzfp ./${OMADA_FILE} && \
   # dpkg -i --ignore-depends=jsvc,java17-runtime,java17-runtime-headless,jdk-17 ./${OMADA_FILE} && \
   echo "==> Installing Omada in cluster mode" && \
