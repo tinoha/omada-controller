@@ -1,0 +1,10 @@
+# Exclude from build context — none of these are referenced by any COPY
+.git
+.github
+kubernetes
+legacy
+versions
+*.md
+LICENSE.txt
+build.sh
+omada_v*.Dockerfile
