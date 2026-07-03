@@ -21,7 +21,7 @@ Guidance for AI agents working in this repo. This repo packages TP-Link's Omada 
 ## Lint
 
 - `shellcheck` is installed and should be run on changed `.sh` files (`build.sh`, `entrypoint.sh`, `healthcheck.sh`) before declaring done. Install with `apt install shellcheck` if absent.
-- `shfmt` runs automatically via opencode's formatter config on `.sh`/`.bash` writes; no manual invocation needed.
+- `shfmt` runs automatically via opencode's formatter config on `.sh`/`.bash` writes; no manual invocation needed. If not using opencode's formatter, run `shfmt -i 2 -w <file>` to format (2-space indent).
 - No linter is configured for Dockerfiles or env files; review those by inspection.
 
 ## CI / release flow
@@ -48,7 +48,7 @@ Guidance for AI agents working in this repo. This repo packages TP-Link's Omada 
 
 ## Verification
 
-- There is no unit test, lint, or typecheck tooling in this repo.
+- There is no unit test or typecheck tooling in this repo. For linting, see the Lint section above.
 - Build the image: `./build.sh --set-ver <ver>`.
 - **Quick test** (matches CI; sufficient for `Dockerfile` `ARG`/`RUN`, `versions/*.env`, `build.sh` changes): `podman run --rm localhost/omada-controller:<ver> sudo tpeap start` — confirm the output contains "Started successfully." The container self-exits on completion.
 - **Lifecycle test** (use when `entrypoint.sh`, `omada_sudoers`, or the `USER`/`ENTRYPOINT`/`HEALTHCHECK` lines change): `podman run -d --name omada-test localhost/omada-controller:<ver>` → wait for "Started successfully." in `podman logs -f omada-test` (Ctrl-C detaches without stopping) → `podman exec omada-test sudo tpeap status` → `podman stop --time=300 omada-test` → confirm "Stop successfully." in `podman logs omada-test` → `podman rm omada-test`. This exercises the entrypoint's no-args path (`sudo tpeap start` + `sleep infinity & wait`), the SIGTERM trap, and graceful `tpeap stop` shutdown. The `--time=300` matters: graceful shutdown can take minutes depending on MongoDB size. Do not use `--rm` here: it removes the container on stop before logs can be inspected.
