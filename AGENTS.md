@@ -18,6 +18,12 @@ Guidance for AI agents working in this repo. This repo packages TP-Link's Omada 
 - **Adding a new version**: create `versions/<ver>.env` with `DOCKERFILE` set to the template or a standalone Dockerfile, and fill in the `BUILD_ARG_*` values as needed. `build.sh` needs no changes — it forwards whatever the env file declares.
 - `legacy/build.sh` is the pre-refactor build script kept for reference. The older `omada_v*.Dockerfile` files at the repo root are kept for rebuilding previous versions and may break if upstream download URLs, package repos, or third-party artifacts change.
 
+## Lint
+
+- `shellcheck` is installed and should be run on changed `.sh` files (`build.sh`, `entrypoint.sh`, `healthcheck.sh`) before declaring done. Install with `apt install shellcheck` if absent.
+- `shfmt` runs automatically via opencode's formatter config on `.sh`/`.bash` writes; no manual invocation needed.
+- No linter is configured for Dockerfiles or env files; review those by inspection.
+
 ## CI / release flow
 
 - CI workflow: `.github/workflows/container-image.yml`; behavior documented in `.github/workflows/README.md`.
