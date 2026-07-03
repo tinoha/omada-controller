@@ -44,39 +44,39 @@ print_supported_versions() {
 # Argument handling
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    --set-ver)
-      if [[ -n $2 ]]; then
-        VER=$2
-        shift
-      else
-        echo "Error: --set-ver requires a version argument." >&2
-        exit 1
-      fi
-      ;;
-    --file)
-      if [[ -n $2 ]]; then
-        FILE_OPT=$2
-        shift
-      else
-        echo "Error: --file requires a path argument." >&2
-        exit 1
-      fi
-      ;;
-    --help)
-      echo "Usage: $0 --set-ver <version> [--file <dockerfile>]"
-      echo
-      print_supported_versions
-      echo
-      echo "Versions without an env file can still be built by passing the"
-      echo "Dockerfile explicitly, e.g.:"
-      echo "  $0 --set-ver <version> --file <path>"
-      exit 0
-      ;;
-    *)
-      echo "Unknown option: $1" >&2
-      echo "Use --help to see available options." >&2
+  --set-ver)
+    if [[ -n $2 ]]; then
+      VER=$2
+      shift
+    else
+      echo "Error: --set-ver requires a version argument." >&2
       exit 1
-      ;;
+    fi
+    ;;
+  --file)
+    if [[ -n $2 ]]; then
+      FILE_OPT=$2
+      shift
+    else
+      echo "Error: --file requires a path argument." >&2
+      exit 1
+    fi
+    ;;
+  --help)
+    echo "Usage: $0 --set-ver <version> [--file <dockerfile>]"
+    echo
+    print_supported_versions
+    echo
+    echo "Versions without an env file can still be built by passing the"
+    echo "Dockerfile explicitly, e.g.:"
+    echo "  $0 --set-ver <version> --file <path>"
+    exit 0
+    ;;
+  *)
+    echo "Unknown option: $1" >&2
+    echo "Use --help to see available options." >&2
+    exit 1
+    ;;
   esac
   shift
 done
@@ -98,13 +98,13 @@ if [[ -f "${ENV_FILE}" ]]; then
   # actually declares (not shell internals like PATH/HOME). Opt-in: a key must
   # start with BUILD_ARG_ to become a build-arg; the prefix is stripped so the
   # Dockerfile sees the unprefixed name (OMADA_VER, MONGO_VER, ...).
-    while IFS= read -r line || [[ -n "$line" ]]; do
-      [[ "$line" =~ ^[[:space:]]*# ]] && continue
-      [[ -z "${line//[[:space:]]/}" ]] && continue
-      if [[ "$line" =~ ^BUILD_ARG_([A-Za-z_][A-Za-z0-9_]*)= ]]; then
-        ENV_KEYS+=("${BASH_REMATCH[1]}")
-      fi
-    done < "${ENV_FILE}"
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    [[ "$line" =~ ^[[:space:]]*# ]] && continue
+    [[ -z "${line//[[:space:]]/}" ]] && continue
+    if [[ "$line" =~ ^BUILD_ARG_([A-Za-z_][A-Za-z0-9_]*)= ]]; then
+      ENV_KEYS+=("${BASH_REMATCH[1]}")
+    fi
+  done <"${ENV_FILE}"
 fi
 
 # Resolve which Dockerfile to build: --file overrides the env file's DOCKERFILE
@@ -152,6 +152,7 @@ echo "Building omada-controller image for ${TAG} version..."
 # needs elevated capabilities. v6.x uses the cluster-mode installer and needs none.
 CAP_ARGS=()
 if [[ "${TAG}" == 5.* ]]; then
+  # shellcheck disable=SC2054 # comma-separated value is intentional for podman's --cap-add
   CAP_ARGS+=(--cap-add=DAC_READ_SEARCH,SETGID,SETUID,NET_BIND_SERVICE)
 fi
 
