@@ -1,0 +1,10 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "bash": {
+      "podman run --rm -i ghcr.io/hadolint/hadolint *": "allow",
+      "./build.sh *": "allow",
+      "build.sh *": "allow"
+    }
+  }
+}
