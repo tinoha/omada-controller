@@ -22,7 +22,7 @@ Guidance for AI agents working in this repo. This repo packages TP-Link's Omada 
 
 - `shellcheck` is installed and should be run on changed `.sh` files (`build.sh`, `entrypoint.sh`, `healthcheck.sh`) before declaring done. Install with `apt install shellcheck` if absent.
 - `shfmt` runs automatically via opencode's formatter config on `.sh`/`.bash` writes; no manual invocation needed. If not using opencode's formatter, run `shfmt -i 2 -w <file>` to format (2-space indent).
-- No linter is configured for Dockerfiles or env files; review those by inspection.
+- `hadolint` should be run on any Dockerfile that is changed: `podman run --rm -i ghcr.io/hadolint/hadolint < <Dockerfile>`. Exclude the legacy `omada_v5*.Dockerfile` files (out of scope, may break). Accepted warnings that do not need fixing: DL3008 (pin apt versions — base image is a moving tag), DL3015 (`--no-install-recommends` in throwaway build stage), DL3003 (WORKDIR vs `cd` — `cd` inside a single `RUN` is the correct pattern).
 
 ## CI / release flow
 

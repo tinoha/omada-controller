@@ -67,6 +67,8 @@ ARG JAVA_PKG
 ENV TZ=${TZ} DEBIAN_FRONTEND="noninteractive"
 ENV OMADA_USER=${OMADA_USER}
 
+SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
+
 LABEL org.opencontainers.image.title="omada-controller"\
  org.opencontainers.image.description="Container image for TP-Link Omada Software Controller"\
  org.opencontainers.image.base.name="docker.io/library/${OS_BASE}"\
@@ -97,8 +99,8 @@ RUN apt-get -yq update && \
 # Install and configure Omada-Controller software
 ENV JAVA_HOME=${JAVA_HOME}
 RUN echo "==> Creating omada user and group" && \
-  groupadd -g ${OMADA_GID} ${OMADA_USER} && \
-  useradd -u ${OMADA_UID} -g ${OMADA_GID} -d /opt/tplink/EAPController/data -s /usr/sbin/nologin -M ${OMADA_USER} && \
+  groupadd -g "${OMADA_GID}" "${OMADA_USER}" && \
+  useradd -l -u "${OMADA_UID}" -g "${OMADA_GID}" -d /opt/tplink/EAPController/data -s /usr/sbin/nologin -M "${OMADA_USER}" && \
   echo "==> Installing sudoers file" && \
   chmod 0440 omada_sudoers && mv omada_sudoers /etc/sudoers.d && \
   echo "==> Downloading Omada package" && \
@@ -107,16 +109,16 @@ RUN echo "==> Creating omada user and group" && \
   if [ -n "${OMADA_SHA512}" ]; then echo "${OMADA_SHA512}  ./${OMADA_FILE}" | sha512sum -c -; else echo "Warning: OMADA_SHA512 is not set; skipping package checksum verification"; fi && \
   echo "==> Extracting and installing Omada package" && \
   OMADA_DIR="${OMADA_FILE%_*.tar.gz}" && \
-  ls -l ./${OMADA_FILE} && sha512sum ./${OMADA_FILE} && \
-  tar xzfp ./${OMADA_FILE} && \
+  ls -l "./${OMADA_FILE}" && sha512sum "./${OMADA_FILE}" && \
+  tar xzfp "./${OMADA_FILE}" && \
   # dpkg -i --ignore-depends=jsvc,java17-runtime,java17-runtime-headless,jdk-17 ./${OMADA_FILE} && \
   echo "==> Installing Omada in cluster mode" && \
-  (cd ${OMADA_DIR} && echo "y" | bash ./install.sh init-cluster-mode) && \
+  (cd "${OMADA_DIR}" && echo "y" | bash ./install.sh init-cluster-mode) && \
   echo "==> Creating writable directories and setting permissions" && \
   mkdir -p /opt/tplink/EAPController/logs /opt/tplink/EAPController/data /opt/tplink/EAPController/work && \
-  chown -R ${OMADA_UID}:${OMADA_GID} /opt/tplink/EAPController/logs /opt/tplink/EAPController/data /opt/tplink/EAPController/work /opt/tplink/EAPController/properties && \
+  chown -R "${OMADA_UID}:${OMADA_GID}" /opt/tplink/EAPController/logs /opt/tplink/EAPController/data /opt/tplink/EAPController/work /opt/tplink/EAPController/properties && \
   echo "==> Cleaning up" && \
-  rm -fr ${OMADA_DIR} && rm -f ${OMADA_FILE}
+  rm -fr "${OMADA_DIR}" && rm -f "${OMADA_FILE}"
 
 EXPOSE 8088 8043 8843 19810/udp 27001/udp 29810/udp 29811 29812 29813 29814 29815 29816 29817
 
