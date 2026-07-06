@@ -111,8 +111,6 @@ The examples below use **Podman**. To use **Docker**, simply replace `podman` wi
 
 ### Omada Controller v6.x
 
-Omada Controller v6.x images require no additional Linux capabilities.
-
 ```bash
 podman run -d \
   --restart unless-stopped \
@@ -132,8 +130,6 @@ podman run -d \
 ```
 
 ### Omada Controller v5.x
-
-Omada Controller v5.x images require additional Linux capabilities because the TP-Link `.deb` package starts the controller during installation.
 
 ```bash
 podman run -d \
