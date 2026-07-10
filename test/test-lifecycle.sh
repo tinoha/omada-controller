@@ -6,7 +6,7 @@
 # the logs for "Started successfully.", then asserts:
 #   1. `sudo tpeap status` exits 0
 #   2. /omada/healthcheck.sh exits 0 (the script Docker uses for HEALTHCHECK)
-# Finally sends SIGTERM via `podman stop --time=300` to exercise the trap
+# Finally sends SIGTERM via `podman stop --time=200` to exercise the trap
 # and graceful `tpeap stop`, then verifies "Stop successfully." in logs.
 #
 # This exercises entrypoint.sh, the SIGTERM trap, omada_sudoers, and
@@ -55,7 +55,7 @@ else
 fi
 
 # Graceful stop — sends SIGTERM, entrypoint trap runs tpeap stop.
-echo "Stopping (graceful, up to 300s)..."
+echo "Stopping (graceful, up to 200s)..."
 stop_and_verify "$ctr"
 
 exit "$FAILED"
