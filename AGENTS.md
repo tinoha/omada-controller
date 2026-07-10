@@ -26,10 +26,11 @@ Guidance for AI agents working in this repo. This repo packages TP-Link's Omada 
 
 ## CI / release flow
 
+- **All work happens on versioned feature branches, not `main`.** Merge with `--ff-only` or squash (if throwaway commits exist). See branch lane naming below.
 - CI workflow: `.github/workflows/container-image.yml`; behavior documented in `.github/workflows/README.md`.
 - Branch lanes: `release/v*`, `deps/v*` build and push a `-dev` image to GHCR; `bugfix/v*`, `refactor/v*`, and `workflow-dev` are build-only (no publish). Version tags (`v*`) push to both GHCR and Docker Hub and create a GitHub release.
 - `workflow-dev` builds a static v6.x tag (currently `6.2.10.17`) — use this lane to test workflow changes without a versioned branch.
-- Runtime test: v6.x is run-tested post-build (`tpeap start` must report "Started successfully."); v5.x is not, because its `.deb` install starts the service during the build (caps are added by `build.sh`), so the build itself is the runtime test.
+- Runtime test: v6.x is run-tested post-build (`tpeap start` must report "Started successfully."); v5.x is not tested (legacy).
 - Concurrency control cancels superseded branch runs; tag runs are never cancelled.
 - Release policy: version tags (e.g. `6.2.10.17`) are immutable; container-only rebuilds use a revision suffix (e.g. `6.2.10.17-r1`); `-dev` tags are replaceable.
 
@@ -48,9 +49,13 @@ Guidance for AI agents working in this repo. This repo packages TP-Link's Omada 
 
 ## Verification
 
-- There is no unit test or typecheck tooling in this repo. For linting, see the Lint section above.
-- Build the image: `./build.sh --set-ver <ver>`.
-- **Quick test** (matches CI; sufficient for `Dockerfile` `ARG`/`RUN`, `versions/*.env`, `build.sh` changes): `podman run --rm localhost/omada-controller:<ver> sudo tpeap start` — confirm the output contains "Started successfully." The container self-exits on completion.
-- **Lifecycle test** (use when `entrypoint.sh`, `omada_sudoers`, or the `USER`/`ENTRYPOINT`/`HEALTHCHECK` lines change): `podman run -d --name omada-test localhost/omada-controller:<ver>` → wait for "Started successfully." in `podman logs -f omada-test` (Ctrl-C detaches without stopping) → `podman exec omada-test sudo tpeap status` → `podman stop --time=300 omada-test` → confirm "Stop successfully." in `podman logs omada-test` → `podman rm omada-test`. This exercises the entrypoint's no-args path (`sudo tpeap start` + `sleep infinity & wait`), the SIGTERM trap, and graceful `tpeap stop` shutdown. The `--time=300` matters: graceful shutdown can take minutes depending on MongoDB size. Do not use `--rm` here: it removes the container on stop before logs can be inspected.
-- `tpeap` requires root; the container runs as non-root `omada` (UID 550), so `sudo tpeap start|status|stop` is the intended path (granted by `omada_sudoers`).
-- **When to verify.** There is no CI gate for local changes (CI runs only on versioned branches/tags), so local verification is the only pre-push check. The build is expensive — minutes, pulls base layers, builds jsvc from source — and the runtime test may require capabilities on v5.x. **Ask before running either** the build or a runtime test; present them as separate proposals, not assumptions. If the user has authorised verification for the current task, proceed without re-asking within that task. Non-build changes (README, docs, `kubernetes/`, `legacy/`, comments-only) need no build verification.
+Runtime tests are shell scripts in `test/`. The image must be built first (`./build.sh --set-ver <ver>`). v6.x only — v5.x is legacy and not tested.
+
+    ./test/run.sh --tag <ver> --suite smoke       # tpeap start/stop via direct commands (~1min)
+    ./test/run.sh --tag <ver> --suite lifecycle   # full container lifecycle: no-args entrypoint, status, healthcheck, graceful stop (~2-3min)
+
+- **smoke**: starts `tpeap` directly (`sudo tpeap start`/`stop`), confirms "Started successfully." / "Stop successfully." Run for `Dockerfile`/`ARG`/`versions/*.env`/`build.sh` changes.
+- **lifecycle**: starts the container with no args (default entrypoint path), polls logs for startup, asserts `tpeap status` and `healthcheck.sh` exit 0, then graceful-stops via SIGTERM and verifies "Stop successfully." Run when `entrypoint.sh`, `omada_sudoers`, `healthcheck.sh`, or `Dockerfile` `USER`/`ENTRYPOINT`/`HEALTHCHECK` lines change.
+- No test needed for `README.md`, docs, `kubernetes/`, `legacy/`, or comments-only changes.
+
+There is no CI gate for local changes (CI runs only on versioned branches/tags), so local verification is the only pre-push check. The build is expensive — minutes, pulls base layers, builds jsvc from source. **Ask before running** the build or a test; present them as separate proposals, not assumptions. If the user has authorised verification for the current task, proceed without re-asking within that task.

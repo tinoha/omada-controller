@@ -4,7 +4,9 @@
     "bash": {
       "podman run --rm -i ghcr.io/hadolint/hadolint *": "allow",
       "./build.sh *": "allow",
-      "build.sh *": "allow"
+      "build.sh *": "allow",
+      "./test/run.sh *": "allow",
+      "test/run.sh *": "allow"
     }
   }
 }
