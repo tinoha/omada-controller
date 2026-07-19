@@ -155,7 +155,7 @@ jobs:
             echo "See the README for usage and deployment documentation."
           } > release-notes.md
 
-          gh release create "${IMAGE_TAG}" \
+          gh release create "${{ github.ref_name }}" \
               --title "${IMAGE_TAG}" \
               --notes-file release-notes.md \
               --verify-tag \
