@@ -5,7 +5,7 @@
 
 Container image for running TP-Link's [Omada Software Controller](https://www.omadanetworks.com/us/business-networking/omada-controller-cloud-software/omada-software-controller/) to manage [Omada SDN network devices](https://www.tp-link.com/us/business-networking/all-omada/).
 
-This repository packages the official TP-Link Omada Software Controller for containerized environments, keeping the build process transparent and reproducible. The image is designed to be a well-documented container image that closely follows the upstream software without hidden modifications — the contents and build process of every published image should be easy to inspect, understand and reproduce.
+The Omada application is installed unmodified, and version metadata, download URLs, checksums and runtime dependencies are tracked in this repository to keep builds transparent and reproducible.
 
 ## Table of Contents
 
@@ -22,7 +22,7 @@ This repository packages the official TP-Link Omada Software Controller for cont
 
 ## Quick Start
 
-The image is built and tested with Podman, but is also compatible with Docker. To run the latest supported Omada Controller v6.x release:
+The image is built and tested with Podman and is also compatible with Docker. To run the Omada Software Controller:
 
 ```bash
 podman run -d \
@@ -42,39 +42,26 @@ podman run -d \
   docker.io/tihal/omada-controller:<version>
 ```
 
-Replace `<version>` with a tag from the [Published Image Versions](#published-image-versions) table (for example `6.2.10.17`).
+See [Published Image Versions](#published-image-versions) table for the image versions (tags). Once started, the Omada Controller web interface is available at:
 
-After the container has started, the Omada Controller web interface is available at `http://localhost:8088`.
+`http://localhost:8088`
 
-Note: Omada Controller **v5.x** images require additional Linux capabilities (`--cap-add`); **v6.x** images do not. See [Usage](#usage) for complete examples for both.
+v5.x images require additional Linux capabilities and a slightly different port range; see [Usage](#usage).
 
 ## About
 
-The image is created by installing the official TP-Link Omada Software Controller package together with its required dependencies on an Ubuntu base image. No modifications are made to the Omada application or its files. Controller lifecycle management (start, stop and status) uses TP-Link's original `tpeap` script.
-
-The container runs as the non-root user `omada` (UID/GID 550) by default. `sudo` is used only to invoke the `tpeap` control script, which requires root privileges.
-
-A health check periodically runs `tpeap status` and reports the controller status to the container runtime. This allows orchestrators and monitoring systems to detect an unhealthy controller.
-
-The build process is intentionally transparent. Image versions, download URLs, checksums, operating system versions and runtime dependencies are tracked in this repository so that image contents can be verified and reproduced.
-
-### Features
-
 - Available for `linux/amd64`.
-- Uses the official TP-Link Omada Software Controller packages.
-- No modifications are made to the Omada application or its files.
-- Runs as a non-root user by default.
-- Built and tested with Podman; compatible with Docker.
-- Versioned, reproducible build process.
-- Kubernetes deployment examples included.
-- Image contents and dependency versions are fully documented.
+- The image installs the official TP-Link Omada Software Controller package and its dependencies on an Ubuntu base image.
+- Controller lifecycle (start, stop, status) is managed by TP-Link's original `tpeap` script.
+- The container runs as the non-root user `omada` (UID/GID 550); `sudo` is used only to invoke `tpeap`, which requires root.
+- A health check runs `tpeap status` so orchestrators and monitoring systems can detect an unhealthy controller.
 
 ## Published Image Versions
 
-The table below shows which Omada Software Controller version is packaged in each published image together with its major runtime dependencies.
+Published image versions and their runtime dependencies:
 
-| Image Tag    | Omada Controller | Ubuntu | Java (JDK) | JSvc | MongoDB | Notes                 |
-| ------------ | ---------------- | ------ | ---------- | ---- | ------- | --------------------- |
+| Image Tag    | Omada Controller | Ubuntu | Java (JDK) | JSVC | MongoDB  | Notes                 |
+| ------------ | ---------------- | ------ | ---------- | ---- | -------- | --------------------- |
 | `6.2.10.17`  | 6.2.10.17        | 24.04  | OpenJDK 21 | 1.4.1 | 8.0.23  | Release 6.2.10.17     |
 | `6.2.0.17`   | 6.2.0.17         | 24.04  | OpenJDK 21 | 1.4.1 | 8.0.23  | Release 6.2.0.17      |
 | `6.1.0.19`   | 6.1.0.19         | 24.04  | OpenJDK 21 | 1.4.1 | 8.0.20  | Release 6.1.0.19      |
@@ -85,9 +72,11 @@ The table below shows which Omada Software Controller version is packaged in eac
 | `5.15.20.18` | 5.15.20.18       | 22.04  | OpenJDK 21 | 1.4.1 | 7.0.18  | Release 5.15.20.18    |
 | `5.15.20-1`  | 5.15.20.16       | 22.04  | OpenJDK 21 | 1.4.1 | 7.0.18  | Container revision    |
 | `5.15.20`    | 5.15.20.16       | 22.04  | OpenJDK 21 | 1.4.1 | 7.0.18  | Release 5.15.20.16    |
-| `5.14.26`    | 5.14.26.1        | 22.04  | OpenJDK 8  | 1.0.15 | 7.0.7   | Release 5.14.26.1     |
+| `5.14.26`    | 5.14.26.1        | 22.04  | OpenJDK 8  | 1.0.15 | 7.0.7  | Release 5.14.26.1     |
 
-Older image versions may be removed over time to reduce registry storage requirements. If you rely on a specific version, keep a local copy or [build your own image](#build).
+- Older image versions may be removed over time to reduce registry storage. If you rely on a specific version, keep a local copy or [build your own image](#build).
+- See currently available tags on [Docker Hub](https://hub.docker.com/r/tihal/omada-controller/tags) or run
+`podman search --list-tags docker.io/tihal/omada-controller`.
 
 ### Upgrading
 
@@ -99,11 +88,9 @@ Refer to TP-Link's [Omada Software Controller release notes](https://www.tp-link
 
 ## Tags
 
-This image does not publish a `latest` tag — pin a specific version tag for reproducible deployments.
-
-Published release tags are intended to be immutable. Tags matching the Omada Software Controller version (for example `6.2.10.17`) identify the first container image built for that upstream release. If the image is rebuilt while the bundled Omada Controller version remains unchanged — for example to address container packaging, dependency or base image updates — a revision suffix is appended, for example `6.2.10.17-r1`.
-
-Development tags ending in `-dev` are intended for testing and may be replaced or removed without notice.
+- No `latest` tag — pin a specific version to ensure reproducible deployments and avoid unexpected upgrades.
+- Release tags are immutable. A tag matching the upstream version (e.g. `6.2.10.17`) is the first build of that release; rebuilds with the same controller version get a revision suffix (e.g. `6.2.10.17-r1`).
+- `-dev` tags are for testing and may be replaced or removed without notice.
 
 ## Usage
 
@@ -111,23 +98,7 @@ The examples below use **Podman**. To use **Docker**, simply replace `podman` wi
 
 ### Omada Controller v6.x
 
-```bash
-podman run -d \
-  --restart unless-stopped \
-  --name omada-controller \
-  -e TZ=Etc/UTC \
-  -v omada-logs:/opt/tplink/EAPController/logs \
-  -v omada-data:/opt/tplink/EAPController/data \
-  -p 8088:8088 \
-  -p 8043:8043 \
-  -p 8843:8843 \
-  -p 19810:19810/udp \
-  -p 27001:27001/udp \
-  -p 29810:29810/udp \
-  -p 29811-29817:29811-29817 \
-  --stop-timeout=300 \
-  docker.io/tihal/omada-controller:<version>
-```
+Use the command from [Quick Start](#quick-start).
 
 ### Omada Controller v5.x
 
@@ -190,7 +161,7 @@ Example Kubernetes manifests are provided in the `kubernetes/` directory. They a
 Review the generated manifests before deployment:
 
 ```bash
-# Review what will be deployed (v5.x or v6.x)
+# Preview the generated manifests (v5.x or v6.x)
 kubectl kustomize kubernetes/overlays/omada-v6.x
 
 # Deploy once you are happy with the output
@@ -225,15 +196,15 @@ It's strongly recommended to create backups and store them in a safe location. T
 
 ## Build
 
-The repository ships a build script, `build.sh`, that wraps `podman build` and keeps per-version metadata in small env files under `versions/`. This keeps builds reproducible and avoids hardcoding versions or download URLs inside the Dockerfiles. Newer image releases use a shared Dockerfile together with version-specific metadata, while older releases are still supported through their original standalone `omada_v*.Dockerfile` files at the repo root.
+The repository includes `./build.sh` script, which wraps `podman build` and keeps per-version metadata in small env files under `versions/`. This keeps builds reproducible and avoids hardcoding versions or download URLs inside the Dockerfiles.
 
-### Supported versions
+List the supported versions:
 
-Run `./build.sh --help` to list the versions that ship with an env file. The list is derived from `versions/*.env`, so it stays in sync with what is in the repo.
+```bash
+./build.sh --help
+```
 
-### Building an image
-
-To build a version that has an env file:
+To build an image:
 
 ```bash
 ./build.sh --set-ver <version>
@@ -241,29 +212,11 @@ To build a version that has an env file:
 
 For example, `./build.sh --set-ver 6.2.10.17`.
 
-For a version without an env file, point `--file` at a Dockerfile explicitly:
-
-```bash
-./build.sh --set-ver <version> --file <path/to/Dockerfile>
-```
-
-### What `build.sh` does
-
-For a given `--set-ver <version>`, `build.sh` looks for `versions/<version>.env`. If it exists, variables are read from it:
-
-- `BUILD_ARG_<NAME>="value"` — forwarded to `podman build` as `--build-arg <NAME>=value` (the `BUILD_ARG_` prefix is stripped). If the file declares none, zero build-args are passed and the Dockerfile's baked-in `ARG` defaults stay in effect.
-- Any other `<NAME>="value"` — used by `build.sh` itself and never forwarded. The `DOCKERFILE` field is one of these; it selects which Dockerfile to build.
-
-If no `versions/<version>.env` exists, `build.sh` requires `--file <path>` to point at the Dockerfile to build, and builds it with no build-args.
-The resulting image tag is `BUILD_ARG_OMADA_VER` from the env file if set, otherwise the value passed to `--set-ver`.
-
-Note: v5.x builds use the `.deb` package, which starts the controller during installation and requires capabilities. `build.sh` adds `--cap-add=DAC_READ_SEARCH,SETGID,SETUID,NET_BIND_SERVICE` automatically when the tag starts with `5.`, so you do not need to pass caps manually. v6.x uses the `.tar.gz` package and needs none.
-
-For more information, visit the [source repository](https://github.com/tinoha/omada-controller/) on GitHub.
+[See BUILD.md for details](BUILD.md)
 
 ## Support
 
-This image is built and maintained as part of my personal home network setup, where I use the Omada Software Controller to manage TP-Link devices. I occasionally update the image based on new Omada releases, but I cannot guarantee a regular update schedule.
+This project is maintained in my spare time and primarily used in my own home network. I aim to keep it updated as new Omada releases become available, but updates may not always be immediate.
 
 If you encounter issues specific to this container image or the build process, feel free to contact me at tinoha10@outlook.com — I'll do my best to improve the project as time allows. Your feedback is appreciated!
 
