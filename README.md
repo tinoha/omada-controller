@@ -60,20 +60,21 @@ v5.x images require additional Linux capabilities and a slightly different port 
 
 Published image versions and their runtime dependencies:
 
-| Image Tag       | Omada Controller | Ubuntu | Java (JDK) | JSVC | MongoDB  | Notes                 |
-| --------------- | ---------------- | ------ | ---------- | ---- | -------- | --------------------- |
-| `6.2.10.17-r1`  | 6.2.10.17        | 24.04  | OpenJDK 21 | 1.4.1 | 8.0.26  | Container revision    |
-| `6.2.10.17`     | 6.2.10.17        | 24.04  | OpenJDK 21 | 1.4.1 | 8.0.23  | Release 6.2.10.17     |
-| `6.2.0.17`   | 6.2.0.17         | 24.04  | OpenJDK 21 | 1.4.1 | 8.0.23  | Release 6.2.0.17      |
-| `6.1.0.19`   | 6.1.0.19         | 24.04  | OpenJDK 21 | 1.4.1 | 8.0.20  | Release 6.1.0.19      |
-| `6.0.0.25`   | 6.0.0.25         | 24.04  | OpenJDK 25 | 1.5.1 | 8.0.17  | Release 6.0.0.25      |
-| `6.0.0.24`   | 6.0.0.24         | 24.04  | OpenJDK 25 | 1.4.1 | 8.0.15  | Release 6.0.0.24      |
-| `5.15.24.18` | 5.15.24.18       | 22.04  | OpenJDK 21 | 1.4.1 | 7.0.22  | Release 5.15.24.18    |
-| `5.15.24.17` | 5.15.24.17       | 22.04  | OpenJDK 21 | 1.4.1 | 7.0.21  | Release 5.15.24.17    |
-| `5.15.20.18` | 5.15.20.18       | 22.04  | OpenJDK 21 | 1.4.1 | 7.0.18  | Release 5.15.20.18    |
-| `5.15.20-1`  | 5.15.20.16       | 22.04  | OpenJDK 21 | 1.4.1 | 7.0.18  | Container revision    |
-| `5.15.20`    | 5.15.20.16       | 22.04  | OpenJDK 21 | 1.4.1 | 7.0.18  | Release 5.15.20.16    |
-| `5.14.26`    | 5.14.26.1        | 22.04  | OpenJDK 8  | 1.0.15 | 7.0.7  | Release 5.14.26.1     |
+| Image Tag      | Omada Controller | Ubuntu | Java (JDK) | JSVC  | MongoDB  | Notes                 |
+| -------------- | ---------------- | ------ | ---------- | ----- | -------- | --------------------- |
+| `6.2.14.11`    | 6.2.14.11        | 24.04  | OpenJDK 21 | 1.4.1 | 8.0.26   | Release 6.2.14.11     |
+| `6.2.10.17-r1` | 6.2.10.17        | 24.04  | OpenJDK 21 | 1.4.1 | 8.0.26   | Container revision    |
+| `6.2.10.17`    | 6.2.10.17        | 24.04  | OpenJDK 21 | 1.4.1 | 8.0.23   | Release 6.2.10.17     |
+| `6.2.0.17`     | 6.2.0.17         | 24.04  | OpenJDK 21 | 1.4.1 | 8.0.23   | Release 6.2.0.17      |
+| `6.1.0.19`     | 6.1.0.19         | 24.04  | OpenJDK 21 | 1.4.1 | 8.0.20   | Release 6.1.0.19      |
+| `6.0.0.25`     | 6.0.0.25         | 24.04  | OpenJDK 25 | 1.5.1 | 8.0.17   | Release 6.0.0.25      |
+| `6.0.0.24`     | 6.0.0.24         | 24.04  | OpenJDK 25 | 1.4.1 | 8.0.15   | Release 6.0.0.24      |
+| `5.15.24.18`   | 5.15.24.18       | 22.04  | OpenJDK 21 | 1.4.1 | 7.0.22   | Release 5.15.24.18    |
+| `5.15.24.17`   | 5.15.24.17       | 22.04  | OpenJDK 21 | 1.4.1 | 7.0.21   | Release 5.15.24.17    |
+| `5.15.20.18`   | 5.15.20.18       | 22.04  | OpenJDK 21 | 1.4.1 | 7.0.18   | Release 5.15.20.18    |
+| `5.15.20-1`    | 5.15.20.16       | 22.04  | OpenJDK 21 | 1.4.1 | 7.0.18   | Container revision    |
+| `5.15.20`      | 5.15.20.16       | 22.04  | OpenJDK 21 | 1.4.1 | 7.0.18   | Release 5.15.20.16    |
+| `5.14.26`      | 5.14.26.1        | 22.04  | OpenJDK 8  | 1.0.15 | 7.0.7   | Release 5.14.26.1     |
 
 - Older image versions may be removed over time to reduce registry storage. If you rely on a specific version, keep a local copy or [build your own image](#build).
 - See currently available tags on [Docker Hub](https://hub.docker.com/r/tihal/omada-controller/tags) or run

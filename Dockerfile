@@ -9,6 +9,7 @@ ARG OS_BASE
 ARG MONGO_VER
 ARG OMADA_VER
 ARG OMADA_DOWNLOAD_URL
+ARG OMADA_DIR
 # Optional checksum for the Omada package.
 # TP-Link does not publish official checksums, so this value is maintained manually.
 # Set to empty to skip verification.
@@ -57,6 +58,7 @@ ARG OS_BASE
 ARG MONGO_VER
 ARG OMADA_VER
 ARG OMADA_DOWNLOAD_URL
+ARG OMADA_DIR
 ARG OMADA_SHA512
 ARG OMADA_USER
 ARG OMADA_UID
@@ -108,7 +110,7 @@ RUN echo "==> Creating omada user and group" && \
   OMADA_FILE="$(basename "${OMADA_DOWNLOAD_URL}")" && \
   if [ -n "${OMADA_SHA512}" ]; then echo "${OMADA_SHA512}  ./${OMADA_FILE}" | sha512sum -c -; else echo "Warning: OMADA_SHA512 is not set; skipping package checksum verification"; fi && \
   echo "==> Extracting and installing Omada package" && \
-  OMADA_DIR="${OMADA_FILE%_*.tar.gz}" && \
+  OMADA_DIR="${OMADA_DIR:-${OMADA_FILE%_*.tar.gz}}" && \
   ls -l "./${OMADA_FILE}" && sha512sum "./${OMADA_FILE}" && \
   tar xzfp "./${OMADA_FILE}" && \
   # dpkg -i --ignore-depends=jsvc,java17-runtime,java17-runtime-headless,jdk-17 ./${OMADA_FILE} && \
