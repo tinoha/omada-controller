@@ -60,8 +60,9 @@ v5.x images require additional Linux capabilities and a slightly different port 
 
 Published image versions and their runtime dependencies:
 
-| Image Tag      | Omada Controller | Ubuntu | Java (JDK) | JSVC  | MongoDB  | Notes                 |
+| Image Tag      | Omada Controller | Ubuntu | Java       | JSVC  | MongoDB  | Notes                 |
 | -------------- | ---------------- | ------ | ---------- | ----- | -------- | --------------------- |
+| `6.3.0.45`     | 6.3.0.45         | 24.04  | OpenJDK 21 | 1.4.1 | 8.0.30   | Release 6.3.0.45      |
 | `6.2.14.11`    | 6.2.14.11        | 24.04  | OpenJDK 21 | 1.4.1 | 8.0.26   | Release 6.2.14.11     |
 | `6.2.10.17-r1` | 6.2.10.17        | 24.04  | OpenJDK 21 | 1.4.1 | 8.0.26   | Container revision    |
 | `6.2.10.17`    | 6.2.10.17        | 24.04  | OpenJDK 21 | 1.4.1 | 8.0.23   | Release 6.2.10.17     |

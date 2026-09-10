@@ -16,14 +16,14 @@ ARG OMADA_DIR
 ARG OMADA_SHA512
 ARG JAVA_VER
 ARG JAVA_HOME="/usr/lib/jvm/java-${JAVA_VER}-openjdk-amd64"
-ARG JAVA_PKG="openjdk-${JAVA_VER}-jdk-headless"
 
 # Stage 1: Build and install jsvc from source
 FROM ${OS_BASE} AS build-jsvc
   # Re-declare global args and add build-specific args
   ARG TZ
   ARG JAVA_HOME
-  ARG JAVA_PKG
+  ARG JAVA_VER
+  ARG JAVA_PKG="openjdk-${JAVA_VER}-jdk-headless"
   ARG JSVC_VER
   ENV TZ=${TZ} DEBIAN_FRONTEND="noninteractive"
   ARG JSVC_BASE_URL="https://archive.apache.org/dist/commons/daemon/source"  # Archive URL for older versions
@@ -64,8 +64,12 @@ ARG OMADA_USER
 ARG OMADA_UID
 ARG OMADA_GID
 ARG JAVA_HOME
-ARG JAVA_PKG
-
+ARG JAVA_VER
+# Java runtime type for the final image: "jdk" or "jre".
+# Default stays "jdk" so builds without BUILD_ARG_JAVA_TYPE (older *.env files,
+# manual builds) reproduce pre-6.3.0.45 images; new env files opt into "jre".
+ARG JAVA_TYPE="jdk"
+ARG JAVA_PKG="openjdk-${JAVA_VER}-${JAVA_TYPE}-headless"
 ENV TZ=${TZ} DEBIAN_FRONTEND="noninteractive"
 ENV OMADA_USER=${OMADA_USER}
 
