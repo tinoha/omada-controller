@@ -2,3 +2,5 @@
 Defaults:omada  env_keep += "OMADA_USER"
 # Allow the omada user to run Omada control scripts as root
 omada           ALL=(root) NOPASSWD:/opt/tplink/EAPController/bin/control.sh,/usr/bin/tpeap
+# Allow removing a stale PID file at container start (this exact command only)
+omada           ALL=(root) NOPASSWD:/usr/bin/rm -f /var/run/omada.pid

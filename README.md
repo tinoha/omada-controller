@@ -42,6 +42,8 @@ podman run -d \
   docker.io/tihal/omada-controller:<version>
 ```
 
+> **Podman and host reboots:** on Podman, `podman-restart.service` (the unit that restarts containers after a reboot) only starts containers whose restart policy is exactly `always` (on Podman 5.4 it runs `podman start --all --filter restart-policy=always`). A container created with `--restart unless-stopped` can therefore stay stopped after a host reboot. If the controller must come back after a reboot, use `--restart always` (or a Quadlet unit).
+
 See [Published Image Versions](#published-image-versions) table for the image versions (tags). Once started, the Omada Controller web interface is available at:
 
 `http://localhost:8088`
