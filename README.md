@@ -26,7 +26,8 @@ The image is built and tested with Podman and is also compatible with Docker. To
 
 ```bash
 podman run -d \
-  --restart unless-stopped \
+  --restart always \
+  --tmpfs /run \
   --name omada-controller \
   -e TZ=Etc/UTC \
   -v omada-logs:/opt/tplink/EAPController/logs \
@@ -107,7 +108,8 @@ Use the command from [Quick Start](#quick-start).
 
 ```bash
 podman run -d \
-  --restart unless-stopped \
+  --restart always \
+  --tmpfs /run \
   --name omada-controller \
   --cap-add=DAC_READ_SEARCH,SETGID,SETUID,NET_BIND_SERVICE \
   -e TZ=Etc/UTC \
